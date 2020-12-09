@@ -2,7 +2,7 @@
   <div class="fondo">
     <div class="form">
       <v-form>
-        <v-img class="login" src="softys_logo.png" />
+        <div class="pl-10"><v-img class="login" src="softys_logo.png" /></div>
         <v-container>
           <v-row
             align="center"
@@ -42,7 +42,7 @@
             </v-col>
           </v-row>
           <div class="mb-5 mt-0 ingresar">
-            <v-btn width="100%" small color="#3ba1da"  dark @click="ingresar()" :disabled="btnIngresar">Ingresar</v-btn>
+            <v-btn width="100%" small color="#3ba1da"  dark >Ingresar</v-btn>
           </div>
         </v-container>
       </v-form>
@@ -51,11 +51,11 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 export default {
-layout: "login",
+layout: "layoutnull",
   data() {
     return {
-      btnIngresar:false,
       rules: value => !!value || 'Este campo es obligatorio',
       alertError:"",
       dialog:false,
@@ -64,9 +64,9 @@ layout: "login",
     };
   },
   methods:{
-      btnIngresar(){
-          
-      }
+    ...mapMutations(["toggleAppBar"]),
+    btnIngresar(){       
+    }
   }
 }
 </script>
@@ -100,7 +100,7 @@ body{
   z-index: 100;
 }
 .login {
-  width: 300px;
+  width: 280px;
   height: 100%;
   margin: 0px auto;
   margin-top: 0px;

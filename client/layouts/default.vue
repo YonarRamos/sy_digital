@@ -7,28 +7,31 @@
       fixed
       app
     >
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+
+       <v-list>
+          <v-list-item class="menuUser pointer">
+            <NuxtLink to="/">
+            <v-list-item-title>
+              <v-icon left color="#295382" align="center" >list</v-icon>
+              Menú Inicial
+            </v-list-item-title>
+            </NuxtLink>
+          </v-list-item>
+          <v-list-item class="menuUser pointer">
+            <NuxtLink to="/datos">
+            <v-list-item-title>
+              <v-icon left color="#295382" align="center" >post_add</v-icon>
+              Carga de Datos
+            </v-list-item-title>
+            </NuxtLink>
+          </v-list-item>
+        </v-list>
+      <password/>
     </v-navigation-drawer>
 
-
 <v-app-bar :clipped-left="clipped" fixed app color="#295382">
+      <!-- <v-img max-width="100px" max-height="100px" src="softys_logo_mini.png" /> -->
       <v-app-bar-nav-icon dark @click.stop="drawer = !drawer" />
-
 
       <v-spacer />
 
@@ -39,33 +42,38 @@
           </v-btn>
         </template>
 
-        <v-list>
+       <v-list>
           <v-list-item class="menuUser pointer">
-            <v-list-item-title  >
+            <v-list-item-title  @click="toggleDialogPassword(true)">
               <v-icon left color="#295382" align="center" >lock</v-icon>
               Cambiar Contraseña
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="menuUser poiter">
-            <v-list-item-title>
+            <NuxtLink to="/login">
+            <v-list-item-title @click="Salir()">
               <v-icon left color="#295382" >west</v-icon>
               Salir
             </v-list-item-title>
+            </NuxtLink>
           </v-list-item>
         </v-list>
       </v-menu>
-
-
-
     </v-app-bar>
-    <v-main> 
+    <v-main>
         <nuxt />
     </v-main>
   </v-app>
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+import password from "@/components/cambiarPassword";
+
 export default {
+  components:{
+    password
+  },
   data() {
     return {
       clipped: false,
@@ -89,5 +97,23 @@ export default {
       title: 'Vuetify.js',
     }
   },
+  methods: {
+    ...mapMutations(["toggleDialogPassword"]),
+    Salir(){
+      console.log("Sale de la aplicacion")
+    }
+  }
 }
 </script>
+
+<style scoped>
+a {  
+  text-decoration: none;
+  color:rgb(0, 0, 0, 0.87);
+  }
+.menuUser:hover{
+ background: rgb(189, 189, 189);
+  
+}
+.pointer {cursor: pointer;}
+</style>
