@@ -4,7 +4,7 @@
       <NuxtLink to="/">
       <v-btn icon ><v-icon color="white" > west </v-icon></v-btn>
       </NuxtLink>
-      <span><h3 class="white--text">Avisos</h3></span>
+      <span><h3 class="white--text">Orden de Trabajo</h3></span>
     </v-app-bar>
 
     <v-main>

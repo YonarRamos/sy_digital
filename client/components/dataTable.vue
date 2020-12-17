@@ -64,12 +64,7 @@ export default {
         { text: 'Descripcion', value: 'descripcion', sortable: false },
         { text: 'Aregar', value: 'agregar', align: 'center', sortable: false },
         { text: 'Editar', value: 'editar', align: 'center', sortable: false },
-        {
-          text: 'Eliminar',
-          value: 'eliminar',
-          align: 'center',
-          sortable: false,
-        },
+        {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false,},
       ],
       equipos: [
         {

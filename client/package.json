@@ -13,6 +13,8 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.12.2",
     "core-js": "^3.6.5",
+    "jspdf": "^2.2.0",
+    "jspdf-autotable": "^3.5.13",
     "nuxt": "^2.14.6",
     "vue": "^2.6.12",
     "vue-csv-import": "^3.3.5",

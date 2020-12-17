@@ -4,7 +4,6 @@
       <v-row>
         <v-col sm="4" lg="3" class="d-flex justify-center">
           <v-hover v-slot="{ hover }" open-delay="100">
-            <NuxtLink to="/menu-detalle">
               <v-card
                 :elevation="hover ? 16 : 2"
                 :class="{ 'on-hover': hover, color: '#295382' }"
@@ -21,12 +20,12 @@
                   >Avisos</v-card-title
                 >
               </v-card>
-            </NuxtLink>
           </v-hover>
         </v-col>
 
         <v-col  sm="4" lg="3" class="d-flex justify-center">
           <v-hover v-slot="{ hover }" open-delay="100">
+            <NuxtLink to="/ot">
             <v-card
               :elevation="hover ? 16 : 2"
               :class="{ 'on-hover': hover }"
@@ -44,6 +43,7 @@
                 >O. de Trabajo</v-card-title
               >
             </v-card>
+            </NuxtLink>
           </v-hover>
         </v-col>
 

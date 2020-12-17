@@ -8,24 +8,21 @@
       app
     >
 
-       <v-list>
-          <v-list-item class="menuUser pointer">
-            <NuxtLink to="/">
-            <v-list-item-title>
-              <v-icon left color="#295382" align="center" >list</v-icon>
-              Menú Inicial
-            </v-list-item-title>
-            </NuxtLink>
-          </v-list-item>
-          <v-list-item class="menuUser pointer">
-            <NuxtLink to="/datos">
-            <v-list-item-title>
-              <v-icon left color="#295382" align="center" >post_add</v-icon>
-              Carga de Datos
-            </v-list-item-title>
-            </NuxtLink>
-          </v-list-item>
-        </v-list>
+      <v-list>       
+        <v-list-item class="menuUser pointer" @click="drawer=false" to="/">
+          <v-list-item-title>
+            <v-icon left color="#295382" align="center" >list</v-icon>
+            Menú Inicial
+          </v-list-item-title>
+        </v-list-item>        
+        <v-list-item class="menuUser pointer" @click="drawer=false" to="/datos">           
+          <v-list-item-title>
+            <v-icon left color="#295382" align="center" >post_add</v-icon>
+            Carga de Datos
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
+
       <password/>
     </v-navigation-drawer>
 
@@ -76,7 +73,7 @@ export default {
   },
   data() {
     return {
-      clipped: false,
+      clipped: true,
       drawer: false,
       fixed: false,
       items: [
@@ -102,7 +99,7 @@ export default {
     Salir(){
       console.log("Sale de la aplicacion")
     }
-  }
+  },
 }
 </script>
 
