@@ -22,6 +22,12 @@ export default {
   },
   methods: {
     exportPDF() {
+
+      //re-ordenamos el los items
+      for (let i=0;i < this.arrayOT.length;i++){
+        this.arrayOT[i].item = i+1;
+      }
+
       const cols = [
         { title: '#', dataKey: 'item' },
         { title: 'Sección', dataKey: 'seccion' },
@@ -130,6 +136,10 @@ export default {
         styles: { lineWidth: 0.01, lineColor: 'black' },
         columnStyles: {
           0: { fontStyle: 'bold', cellWidth: 0.3 },
+          1: { cellWidth: 1 },
+          2: { cellWidth: 1 },
+          3: { cellWidth: 0.5 },
+          4: { cellWidth: 0.6 },
         },
         headStyles: { fillColor: [0, 0, 0] },
         theme: 'grid',
