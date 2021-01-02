@@ -4,9 +4,10 @@ export const state = () => ({
     dialog: false,
     msj:"",
     titulo:"",
-    alertType: ""
+    alertType: "",
   },
   dialogPassword: false,
+  arrayOT: []
 });
 
 export const mutations = {

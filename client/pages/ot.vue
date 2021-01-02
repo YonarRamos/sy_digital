@@ -205,7 +205,7 @@
 
       <v-row>
         <v-col>
-          <data-table-ot :arrayOT="arrayOT" />
+          <data-table-ot/>
         </v-col>
       </v-row>
       <v-card>
@@ -244,7 +244,6 @@ export default {
       dateRealizado:new Date().toISOString().substr(0, 10),
       menuSolicitud: false,
       menuRealizado: false,
-      arrayOT: [],
       arrayDatosOT:{
         sector:"",
         linea:"",
@@ -264,6 +263,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(["arrayOT"]),
       formattedSolicitud () {
         return this.formatDate(this.dateSolicitud)
       },
