@@ -54,8 +54,12 @@ export default {
         .text('OT_CO_AU_LGBT-01_ME_OT-01115145', 0.7, 0.9)
 
       //Logo
-      doc.addImage('logo-softys.png', 'png', 6.1, 0.6, 1.5, 0.7)
-
+        try {
+          doc.addImage('../logo-softys.png', 'png', 6.1, 0.6, 1.5, 0.7)
+        } catch (error) {
+          doc.addImage('../../logo-softys.png', 'png', 6.1, 0.6, 1.5, 0.7)
+        }
+        
       // Using autoTable plugin
       //primera Tabla
       doc.autoTable({

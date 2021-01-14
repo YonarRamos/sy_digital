@@ -212,7 +212,7 @@
         <v-spacer></v-spacer>
         <v-card-actions class="d-flex justify-end">
           <v-btn @click="guardarOT" color="success">Guardar O.T</v-btn>
-          <btn-pdf :datosEncabezado="datosOT" :arrayOT="arrayOT" />
+          <btn-pdf :datosEncabezado="ots[paramsId]" :arrayOT="ots[paramsId].data" />
         </v-card-actions>
       </v-card>
     </v-container>
