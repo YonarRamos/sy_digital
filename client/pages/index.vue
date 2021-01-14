@@ -25,7 +25,7 @@
 
         <v-col  sm="4" lg="3" class="d-flex justify-center">
           <v-hover v-slot="{ hover }" open-delay="100">
-            <NuxtLink to="/manage_ot">
+            <NuxtLink to="/ot">
             <v-card
               :elevation="hover ? 16 : 2"
               :class="{ 'on-hover': hover }"

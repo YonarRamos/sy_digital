@@ -7,7 +7,7 @@ export const state = () => ({
     alertType: "",
   },
   dialogPassword: false,
-  arrayOT: []
+  ots:[]
 });
 
 export const mutations = {
@@ -22,6 +22,9 @@ export const mutations = {
   },
   ocultarInfoModal(state, payload){
     state.infoModal.dialog = payload
-  }
- 
+  },
+  cargarOTS(state, payload){
+    state.ots.push(payload)
+  },
+
 };

@@ -1,6 +1,5 @@
 <template>
   <v-card color="#EBEDEF">
-    {{arrayOT}}
     <v-simple-table class="table-responsive" @keyup.enter="addRow">
       <template v-slot:default>
         <thead >
@@ -135,14 +134,21 @@
 
 <script>
 import ObservacionesOt from './observacionesOt.vue'
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 export default {
+   props: {
+    arrayOT: {
+      type: Array,
+      require: true,
+    },
+  },
   components: {
     ObservacionesOt,
   },
   data() {
     return {
       currentItem: {
+        updated:"",
         item: this.arrayOT ? this.arrayOT.length + 1 : 1,
         seccion: '',
         titulo: '',
@@ -176,14 +182,15 @@ export default {
     }
   },
   computed:{
-    ...mapState(["arrayOT"])
   },
   methods: {
     addRow() {
+      this.currentItem.updated = new Date(Date.now()).toISOString().slice(0,10);
       this.currentItem.imagenes = this.files
-      this.arrayOT.push(this.currentItem)
-      console.log(this.currentItem)
+      this.arrayOT.push(this.currentItem);
+      console.log(this.currentItem);
       this.currentItem = {
+        updated:this.fecha,
         item: this.arrayOT ? this.arrayOT.length + 1 : 1,
         seccion: '',
         titulo: '',

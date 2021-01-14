@@ -13,7 +13,7 @@
                         <v-col>
                           <v-card-title> Crear Nueva O.T </v-card-title>
                           <v-card-subtitle>
-                            OT_CO_AU_LGBT-01_ME_OT-01115145
+                            {{ots[paramsId].id}}
                           </v-card-subtitle>
                         </v-col>
                       </v-row>
@@ -23,7 +23,7 @@
                 <v-col cols="12" md="6" class="py-0">
                   <v-col class="px-0">
                     <v-combobox
-                      v-model="arrayDatosOT.sector"
+                      v-model="ots[paramsId].sector"
                       :items="items"
                       label="Sector"
                       outlined
@@ -35,7 +35,7 @@
                   </v-col>
                   <v-col class="px-0">
                     <v-combobox
-                      v-model="arrayDatosOT.linea"
+                      v-model="ots[paramsId].linea"
                       :items="items"
                       label="Linea"
                       outlined
@@ -72,7 +72,7 @@
                   </template>
                   <v-date-picker
                     no-title
-                    v-model="dateSolicitud"
+                    v-model="ots[paramsId].f_solicitud"
                     @input="menuSolicitud = false"
                   ></v-date-picker>
                 </v-menu>
@@ -80,7 +80,7 @@
 
                 <v-col cols="12" md="6">
                   <v-combobox
-                    v-model="arrayDatosOT.maquina"
+                    v-model="ots[paramsId].maquina"
                     :items="items"
                     label="Máquina"
                     outlined
@@ -115,7 +115,7 @@
                   </template>
                   <v-date-picker
                     no-title
-                    v-model="dateRealizado"
+                    v-model="ots[paramsId].f_realizado"
                     @input="menuRealizado = false"
                   ></v-date-picker>
                 </v-menu>
@@ -123,7 +123,7 @@
 
                 <v-col cols="12" md="6">
                   <v-combobox
-                    v-model="arrayDatosOT.serie"
+                    v-model="ots[paramsId].serie"
                     :items="items"
                     label="Serie"
                     outlined
@@ -135,7 +135,7 @@
 
                 <v-col cols="12" md="6">
                   <v-text-field
-                    v-model="arrayDatosOT.solicitante"
+                    v-model="ots[paramsId].solicitante"
                     outlined
                     dense
                     hide-details
@@ -145,7 +145,7 @@
 
                 <v-col cols="12" md="6">
                   <v-text-field
-                  v-model="arrayDatosOT.grupo"
+                  v-model="ots[paramsId].grupo"
                     outlined
                     dense
                     hide-details
@@ -155,7 +155,7 @@
 
                 <v-col cols="12" md="6">
                   <v-text-field
-                    v-model="arrayDatosOT.ejecucion"
+                    v-model="ots[paramsId].ejecucion"
                     outlined
                     dense
                     hide-details
@@ -165,7 +165,7 @@
 
                 <v-col cols="12" md="6">
                   <v-combobox
-                    v-model="arrayDatosOT.tarea"
+                    v-model="ots[paramsId].tarea"
                     :items="['M.M.', 'M.E.']"
                     label="Tarea"
                     outlined
@@ -177,7 +177,7 @@
 
                 <v-col cols="12" md="6">
                   <v-combobox
-                    v-model="arrayDatosOT.modoIngreso"
+                    v-model="ots[paramsId].modoIngreso"
                     :items="['1', '2']"
                     label="Modo Ingreso"
                     outlined
@@ -189,7 +189,7 @@
                 <v-col class="d-flex justify-end">
                   <div>
                     <v-img
-                      src="logo-softys.png"
+                      src="../../logo-softys.png"
                       height="42px"
                       width="94px"
                       style="position: relative"
@@ -205,22 +205,24 @@
 
       <v-row>
         <v-col>
-          <data-table-ot/>
+          <data-table-ot :arrayOT="ots[paramsId].data" />
         </v-col>
       </v-row>
       <v-card>
         <v-spacer></v-spacer>
         <v-card-actions class="d-flex justify-end">
-          <v-btn color="success">Guardar O.T</v-btn>
-          <btn-pdf :datosEncabezado="arrayDatosOT" :arrayOT="arrayOT" />
+          <v-btn @click="guardarOT" color="success">Guardar O.T</v-btn>
+          <btn-pdf :datosEncabezado="datosOT" :arrayOT="arrayOT" />
         </v-card-actions>
       </v-card>
     </v-container>
+    <info-modal/>
   </div>
 </template>
 
 <script>
 import { mapMutations, mapState } from 'vuex'
+import InfoModal from '~/components/common/infoModal.vue'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import ObservacionesOt from '~/components/common/observacionesOt.vue'
 import DataTableOt from '~/components/common/dataTableOT'
@@ -235,47 +237,76 @@ export default {
     ObservacionesOt,
     DataTableOt,
     DataTableOT,
-    BtnPDF
+    BtnPDF,
+    InfoModal
   },
   data(vm) {
     return {
+      paramsId:null,
+      arrayOT:[],
       disable: true,
-      dateSolicitud:new Date().toISOString().substr(0, 10),
-      dateRealizado:new Date().toISOString().substr(0, 10),
       menuSolicitud: false,
       menuRealizado: false,
-      arrayDatosOT:{
-        sector:"",
-        linea:"",
-        maquina:"",
-        serie:"",
-        grupo:"",
-        tarea:"",
-        f_solicitud: vm.formatDate(new Date().toISOString().substr(0, 10)),
-        f_realizado: vm.formatDate(new Date().toISOString().substr(0, 10)),
-        solicitante:"",
-        ejecucion:"",
-        modoIngreso:""
-      },
       menu: false,
       menu1: false,
       items: ['Item 1', 'Item 2', 'Item 3'],
+        datosOT:{
+          sector:"",
+          linea:"",
+          maquina:"",
+          serie:"",
+          grupo:"",
+          tarea:"",
+          f_solicitud: new Date().toISOString().substr(0, 10),
+          f_realizado: new Date().toISOString().substr(0, 10),
+          solicitante:"",
+          ejecucion:"",
+          modoIngreso:"",
+          data:[]
+        },
     }
   },
   computed: {
-    ...mapState(["arrayOT"]),
+    ...mapState(["ots","infoModal"]),
       formattedSolicitud () {
-        return this.formatDate(this.dateSolicitud)
+        return this.formatDate(this.datosOT.f_solicitud)
       },
       formattedRealizado () {
-        return this.formatDate(this.dateRealizado)
+        return this.formatDate(this.datosOT.f_realizado)
       },
   },
   mounted() {
     this.showBar = false
   },
+  created(){
+    this.paramsId = this.$route.params.id;
+  },
   methods: {
-
+    ...mapMutations(["toggleInfoModal","ocultarInfoModal","cargarOTS"]),
+    guardarOT(){
+      this.datosOT.data.push(...this.arrayOT);
+      this.cargarOTS(this.datosOT);
+        this.datosOT = {
+          sector:"",
+          linea:"",
+          maquina:"",
+          serie:"",
+          grupo:"",
+          tarea:"",
+          f_solicitud: new Date().toISOString().substr(0, 10),
+          f_realizado: new Date().toISOString().substr(0, 10),
+          solicitante:"",
+          ejecucion:"",
+          modoIngreso:"",
+          data:[]
+        }
+      this.toggleInfoModal({
+        dialog: true,
+        msj: `OT Agregada`,
+        titulo: "Agregar OT",
+        alertType: "success",
+      });
+    },
     formatDate (date) {
         if (!date) return null
 
