@@ -40,7 +40,7 @@
 
               <v-card-title
                 class="pt-0 d-flex justify-center font-weight-medium Subtitle 1 white--text"
-                >O. de Trabajo</v-card-title
+                >O.T</v-card-title
               >
             </v-card>
             </NuxtLink>

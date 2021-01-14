@@ -98,7 +98,6 @@
         </v-menu>
       </v-col>
     </v-row>
-{{ots}}
     <v-row>
       <v-col>
         <v-sheet height="600">

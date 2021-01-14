@@ -27,9 +27,9 @@
     </v-navigation-drawer>
 
 <v-app-bar :clipped-left="clipped" fixed app color="#295382">
-      <!-- <v-img max-width="100px" max-height="100px" src="softys_logo_mini.png" /> -->
-      <v-app-bar-nav-icon dark @click.stop="drawer = !drawer" />
-
+      <!-- <v-app-bar-nav-icon dark @click.stop="drawer = !drawer" />-->
+      <v-btn dark icon><v-icon  @click.stop="drawer = !drawer">list</v-icon></v-btn>
+      
       <v-spacer />
 
 <v-menu bottom left>
