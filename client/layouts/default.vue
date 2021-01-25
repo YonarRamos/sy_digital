@@ -31,8 +31,9 @@
       <v-btn dark icon><v-icon  @click.stop="drawer = !drawer">list</v-icon></v-btn>
       
       <v-spacer />
-
+<span style="text-transform:uppercase;" class="white--text">{{username}}</span>
 <v-menu bottom left>
+        
         <template v-slot:activator="{ on, attrs }">
           <v-btn dark icon v-bind="attrs" v-on="on">
             <v-img max-width="40px" max-height="40px" src="user2.png" />
@@ -46,9 +47,9 @@
               Cambiar Contraseña
             </v-list-item-title>
           </v-list-item>
-          <v-list-item class="menuUser poiter">
+          <v-list-item class="menuUser poiter" @click="SET_DESLOGIN()">
             <NuxtLink to="/login">
-            <v-list-item-title @click="Salir()">
+            <v-list-item-title>
               <v-icon left color="#295382" >west</v-icon>
               Salir
             </v-list-item-title>
@@ -64,6 +65,7 @@
 </template>
 
 <script>
+import Cookies from "js-cookie";
 import { mapState, mapMutations } from "vuex";
 import password from "@/components/cambiarPassword";
 
@@ -73,6 +75,7 @@ export default {
   },
   data() {
     return {
+      username: Cookies.get('username'),
       clipped: true,
       drawer: false,
       fixed: false,
@@ -95,10 +98,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["toggleDialogPassword"]),
-    Salir(){
-      console.log("Sale de la aplicacion")
-    }
+    ...mapMutations(["SET_DESLOGIN"]),
   },
 }
 </script>

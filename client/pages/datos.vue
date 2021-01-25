@@ -42,6 +42,7 @@
 import dataTable from "@/components/dataTable";
 import DataTable from '~/components/dataTable.vue';
   export default {
+      middleware: "NOAUTH",
       components:{
           dataTable
       },
