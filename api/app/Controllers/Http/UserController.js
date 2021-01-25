@@ -1,8 +1,8 @@
 'use strict'
 
 const User = use("App/Models/User");
-
 const Rol = use("App/Models/Rol");
+const Company = use("App/Models/Company");
 const Query = require("../../Utils/Query");
 const Hash = use('Hash');
 const Response = use('App/Models/Response');
@@ -22,20 +22,20 @@ class UserController {
       page = page || 1
       perPage = perPage || 10
       
-      let users = await User.query().with('rols').paginate(page , perPage)
-        users = users.toJSON();
+      let users = await User.query().with('company').paginate(page , perPage)
+      /*  users = users.toJSON();
+        console.log(users)
       var arrPromises =  users.data.map(item=>{
         return{
           "id": item.id,
         "username": item.username,
         "email": item.email,
-        "Empresa": item.company,
-        "rol": item.rols.rol
+        "rol": item.rols.rol,
         }
       })
       let resp = await Promise.all(arrPromises)
       //console.log(users.data)
-      users.data = resp
+      users.data = resp*/
        response.status(200).json({message: 'Listado de Usuario', data : users})
     } catch (error) {
       console.log(error)
@@ -61,16 +61,16 @@ class UserController {
   
   async store ({ request, response }) {
     try {
-      let{ username , email , password , rol_id,confirm_password , company} = request.all();
+      let{ username , email , password , rol_id,confirm_password , company_id} = request.all();
       const rules = {
         username: 'required',
         email: 'required',
         password: 'required',
         rol_id: 'required',
         confirm_password: 'required',
-        company: 'required'
+        company_id: 'required'
       }
-      let validation = await validate({ username , email , password , rol_id, confirm_password, company}, rules);
+      let validation = await validate({ username , email , password , rol_id, confirm_password, company_id}, rules);
       if(validation.fails()){
        return response.status(404).json({message: "Datos Insufiente"});
       }
@@ -81,7 +81,7 @@ class UserController {
           username,
           email,
           password : confirm_password,
-          company,
+          company_id,
           rol_id,
         })
         return response.status(200).json({message: "Usuario creado con exito!", data: user})
