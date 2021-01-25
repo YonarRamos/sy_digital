@@ -150,6 +150,7 @@
 <script>
 import { mapState } from 'vuex'
 export default {
+  middleware: "NOAUTH",
   data: () => ({
     menu: false,
     focus: '',

@@ -28,21 +28,20 @@
                 type="password"
                 label="Contraseña"
                 required
-                @keyup.enter="ingresar()"
+                @keyup.enter="login()"
               ></v-text-field>
-<!--               <v-alert
-                v-model="dialog"
-                dense
-                outlined
-                type="error"
-                class="mb-0 mt-6"
-              >
-                {{alertError}}
-              </v-alert> -->
             </v-col>
+            <v-alert
+                dense
+                type="error"
+                outlined
+                v-if="alertLoginShow"
+              >
+                {{alertLoginMsg}}
+            </v-alert>
           </v-row>
           <div class="mb-5 mt-0 ingresar">
-            <v-btn width="100%" small color="#3ba1da"  dark >Ingresar</v-btn>
+            <v-btn width="100%" small color="#3ba1da"  dark @click="login">Ingresar</v-btn>
           </div>
         </v-container>
       </v-form>
@@ -52,6 +51,8 @@
 
 <script>
 import { mapMutations } from 'vuex';
+import axios from "../plugins/axios";
+
 export default {
 layout: "layoutnull",
   data() {
@@ -60,12 +61,41 @@ layout: "layoutnull",
       alertError:"",
       dialog:false,
       password: "",
-      username: ""
+      username: "",
+      alertLoginMsg:"",
+      alertLoginShow:false
     };
   },
   methods:{
-    ...mapMutations(["toggleAppBar"]),
-    btnIngresar(){       
+    ...mapMutations(["SET_AUTH","SET_USER"]),
+   async login(){
+     try {
+        await axios 
+          .post("login", { email: this.username, password: this.password })
+          .then(res => {
+          let token = res.data.datos;
+          let user = res.data.data;
+          this.SET_USER(user);
+          this.SET_AUTH(token);
+        }).catch(error =>{
+          console.log(error.response.data.feedback.mensaje);
+          this.alertLoginShow = true
+          this.alertLoginMsg = error.response.data.feedback.mensaje;
+        })
+
+     } catch (error) {
+          this.alertLoginShow = true
+          this.alertLoginMsg = "Hubo un error al procesar tu solicitud";
+     }
+    }
+  },
+  watch:{
+        alertLoginShow : function() {
+      if(this.alertLoginShow){
+        setTimeout(() => {
+          this.alertLoginShow = false
+        }, 2500);
+      }
     }
   }
 }

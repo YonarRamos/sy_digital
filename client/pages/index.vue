@@ -116,6 +116,7 @@
 import { mapMutations, mapState } from "vuex";
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 export default {
+  middleware: "NOAUTH",
   computed: {
     ...mapState(["dialogPassword"])
   },

@@ -119,7 +119,6 @@ class UserController {
       return response.status(401).json(resCustom);
     }
   }
-
   async loginToken({ auth, response }) {
     try {
       const user = await auth.getUser();
@@ -132,6 +131,17 @@ class UserController {
       response.status(400).json({ menssage: 'Hubo un error al realizar la operación' })
     }
 
+  }
+  /**
+   * Display a single user.
+   * GET users/:id
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   * @param {View} ctx.view
+   */
+  async show ({ params, request, response, view }) {
   }
 
   /**
