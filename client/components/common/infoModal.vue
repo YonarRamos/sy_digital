@@ -50,7 +50,7 @@ import { mapState, mapMutations } from "vuex";
     }
   }
 </script>
-<style>
+<style scoped>
 .v-card-titulo {
   background: #f44336;
 }

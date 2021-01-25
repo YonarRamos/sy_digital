@@ -1,33 +1,41 @@
 <template>
-  <div class="fondo">
+  <div class="fondo" style="background:#2f2f2f;">
     <div class="form">
       <v-form>
-        <div class="pl-10"><v-img class="login" src="softys_logo.png" /></div>
+        <div class="pl-2"><v-img class="login" src="SYDIGITAL_RED.png" /></div>
         <v-container>
           <v-row
             align="center"
             justify="center"
             class="lightbox white--text pa-4 fill-height formulario"
           >
-            <v-col cols="12" md="12">
+       <v-col cols="12" md="12">
               <v-text-field 
+              dense
               :rules="[rules]" 
               v-model="username" 
-              :counter="50" 
-              label="Email"
+              hide-details
               required
+              prepend-inner-icon="email"
+              placeholder="Email"
+              outlined
+              dark
               >
               </v-text-field>
-            </v-col>
+       </v-col>
 
             <v-col cols="12" md="12">
               <v-text-field
                 :rules="[rules]"
+                dense
+                dark
                 v-model="password"
-                :counter="20"
+                hide-details
                 type="password"
-                label="Contraseña"
+                placeholder="password"
                 required
+                prepend-inner-icon="vpn_key"
+                outlined
                 @keyup.enter="login()"
               ></v-text-field>
             </v-col>
@@ -37,12 +45,14 @@
                 outlined
                 v-if="alertLoginShow"
               >
-                {{alertLoginMsg}}
+                <span class="white--text">{{alertLoginMsg}}</span>
             </v-alert>
           </v-row>
+          <v-col cols="12" md="12">
           <div class="mb-5 mt-0 ingresar">
-            <v-btn width="100%" small color="#3ba1da"  dark @click="login">Ingresar</v-btn>
+            <v-btn width="100%" small color="error"  dark @click="login">Ingresar</v-btn>
           </div>
+          </v-col>
         </v-container>
       </v-form>
     </div>
@@ -102,20 +112,8 @@ layout: "layoutnull",
 </script>
 
 <style scoped>
-body{
-    background-color: #295382
-};
-.create {
-  font-size: 3vh;
-  color: white;
-}
-.ingresar {
-  width: 100%;
-}
-
 .fondo {
-  background:#295382;
-
+  background:#2f2f2f;
   top: 0;
   bottom: 0;
   width: 100%;
@@ -130,11 +128,11 @@ body{
   z-index: 100;
 }
 .login {
-  width: 280px;
+  width: 480px;
   height: 100%;
   margin: 0px auto;
   margin-top: 0px;
-  top: 20px;
+  top: 150px;
 }
 
 .container {
@@ -143,19 +141,17 @@ body{
   align-self: center;
   justify-self: center;
   position: relative;
-  top: 10vh;
-  width: 80vh;
-  background: #ffffff;
+  top: 25vh;
+  width: 70vh;
   border-radius: 10px;
   margin-bottom: 10vh;
 }
 @media (max-width: 700px) {
   .container {
     align-content: center;
-    top: 5vh;
+    top: 25vh;
     margin-bottom: 5vh;
     width: 80%;
   }
 }
 </style>
-<style>

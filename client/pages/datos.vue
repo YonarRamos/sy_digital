@@ -53,7 +53,3 @@ import DataTable from '~/components/dataTable.vue';
     },
   }
 </script>
-
-<style>
-
-</style>

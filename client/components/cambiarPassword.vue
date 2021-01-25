@@ -152,7 +152,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .v-card-titulo {
   background: #295382;
 }

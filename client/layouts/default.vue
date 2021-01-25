@@ -26,9 +26,9 @@
       <password/>
     </v-navigation-drawer>
 
-<v-app-bar :clipped-left="clipped" fixed app color="#295382">
+<v-app-bar @click.stop="drawer = !drawer" :clipped-left="clipped" fixed app color="#295382">
       <!-- <v-app-bar-nav-icon dark @click.stop="drawer = !drawer" />-->
-      <v-btn dark icon><v-icon  @click.stop="drawer = !drawer">list</v-icon></v-btn>
+      <v-btn dark icon><v-icon>list</v-icon></v-btn>
       
       <v-spacer />
 <span style="text-transform:uppercase;" class="white--text">{{username}}</span>
