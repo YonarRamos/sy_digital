@@ -23,4 +23,5 @@ Route.get('/api/v1', () => {
 //users
 Route.post("api/v1/register" ,  "UserController.store");
 Route.post("api/v1/login", "UserController.login");
+Route.get("api/v1/loginUsersAutomatico", "UserController.loginToken");
 Route.get("api/v1/user", "UserController.index");
