@@ -8,30 +8,136 @@
       app
     >
 
-      <v-list>       
-        <v-list-item class="menuUser pointer" @click="drawer=false" to="/">
-          <v-list-item-title>
-            <v-icon left color="#295382" align="center" >list</v-icon>
-            Menú Inicial
-          </v-list-item-title>
-        </v-list-item>        
-        <v-list-item class="menuUser pointer" @click="drawer=false" to="/datos">           
-          <v-list-item-title>
-            <v-icon left color="#295382" align="center" >post_add</v-icon>
-            Carga de Datos
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
+<v-list>
+      <v-list-group
+        :value="false"
+        prepend-icon="build"
+        color="error"
+      >
+        <template v-slot:activator>
+          <v-list-item-title>Equipos</v-list-item-title>
+        </template>
+
+        <v-list-group
+          :value="false"
+          no-action
+          sub-group
+          color="error"
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>Maquinas</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item
+            v-for="([title, icon], i) in maquinas"
+            :key="i"
+            link
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-group
+          no-action
+          sub-group
+          color="error"
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>Lineas</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item
+            v-for="([title, icon], i) in lineas"
+            :key="i"
+            link
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+      </v-list-group>
+
+            <v-list-group
+        :value="false"
+        prepend-icon="description"
+        color="error"
+      >
+        <template v-slot:activator>
+          <v-list-item-title>Extras</v-list-item-title>
+        </template>
+
+        <v-list-group
+          :value="false"
+          no-action
+          sub-group
+          color="error"
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>Usuarios</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item
+            v-for="([title, icon], i) in usuarios"
+            :key="i"
+            link
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+
+                <v-list-group
+          :value="true"
+          no-action
+          sub-group
+          color="error"
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>Hall OT</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item
+            v-for="([title, icon], i) in ot"
+            :key="i"
+            link
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+      </v-list-group>
+    </v-list>
 
       <password/>
     </v-navigation-drawer>
 
-<v-app-bar @click.stop="drawer = !drawer" :clipped-left="clipped" fixed app color="#295382">
+<v-app-bar :clipped-left="clipped" fixed app color="#808080">
       <!-- <v-app-bar-nav-icon dark @click.stop="drawer = !drawer" />-->
-      <v-btn dark icon><v-icon>list</v-icon></v-btn>
+      <v-btn @click.stop="drawer = !drawer" dark icon><v-icon>list</v-icon></v-btn>
       
       <v-spacer />
-<span style="text-transform:uppercase;" class="white--text">{{username}}</span>
+<span style="text-transform:uppercase;" class="white--text mr-2">{{username}}</span>
 <v-menu bottom left>
         
         <template v-slot:activator="{ on, attrs }">
@@ -43,14 +149,14 @@
        <v-list>
           <v-list-item class="menuUser pointer">
             <v-list-item-title  @click="toggleDialogPassword(true)">
-              <v-icon left color="#295382" align="center" >lock</v-icon>
+              <v-icon left color="error" align="center" >lock</v-icon>
               Cambiar Contraseña
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="menuUser poiter" @click="SET_DESLOGIN()">
             <NuxtLink to="/login">
             <v-list-item-title>
-              <v-icon left color="#295382" >west</v-icon>
+              <v-icon left color="error" >west</v-icon>
               Salir
             </v-list-item-title>
             </NuxtLink>
@@ -76,6 +182,20 @@ export default {
   data() {
     return {
       username: Cookies.get('username'),
+      maquinas: [
+        ['T. de Maquina', 'mdi-cog-outline']
+      ],
+      lineas: [
+        ['T. de Linea', 'mdi-cog-outline']
+      ],
+      usuarios: [
+        ['Opcion 1', 'mdi-cog-outline'],
+        ['Opcion 2', 'mdi-cog-outline']
+      ],
+      ot: [
+        ['Opcion 1', 'mdi-cog-outline'],
+        ['Opcion 2', 'mdi-cog-outline']
+      ],
       clipped: true,
       drawer: false,
       fixed: false,

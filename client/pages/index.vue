@@ -3,24 +3,25 @@
     <v-container>
       <v-row>
         <v-col sm="4" lg="3" class="d-flex justify-center" v-for="(item, i) in opciones" :key="i">
-          <v-hover v-slot="{ hover }" open-delay="100">
+      <v-hover
+        v-slot="{ hover }"
+        open-delay="200"
+      >
               <v-card
-                :elevation="hover ? 16 : 2"
-                :class="{ 'on-hover': hover, color: '#295382' }"
+                :class="{ 'on-hover': hover }"
+                flat
                 height="155"
                 width="155"
-                style="cursor: pointer"
-                color="#295382"
+                class="tarjeta"
               >
                 <v-card-text class="d-flex justify-center pb-0">
-                  <v-icon color="white" size="80"> {{item.icon}} </v-icon>
+                  <v-icon size="80"> {{item.icon}} </v-icon>
                 </v-card-text>
-
-                <v-card-title class="pt-0 d-flex justify-center white--text"
+                <v-card-title class="pt-0 d-flex justify-center"
                   >{{item.titulo}}</v-card-title
                 >
               </v-card>
-          </v-hover>
+      </v-hover>
         </v-col>
       </v-row>
     </v-container>
@@ -35,8 +36,8 @@ export default {
   data(){
     return{
       opciones:[
-        {titulo:'Avisos', icon:'warning'},
-        {titulo:'O.T', icon:'warning'},
+        {titulo:'Avisos', icon:'report_problem'},
+        {titulo:'O.T', icon:'fact_check'},
         {titulo:'Consultas', icon:'build'},
         {titulo:'Acciones', icon:'search'},
         {titulo:'Acciones', icon:'widgets'}
@@ -53,11 +54,23 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.tarjeta{
+  cursor: pointer; 
+  border:solid rgb(197, 193, 193);
+  color: grey;
+}
+.tarjeta:hover{
+  background: #808080;
+  color: white !important;
+}
+
+
+
 a{
   text-decoration: none;
 }
 .fondo {
-  background: #EBEDEF;
+  background: white;
   top: 0;
   bottom: 0;
   width: 100%;
@@ -68,3 +81,4 @@ a{
   size: 1;
 }
 </style>
+
