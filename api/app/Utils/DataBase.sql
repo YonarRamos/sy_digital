@@ -8,6 +8,13 @@ create table rols(
     rol varchar(20) NOT NULL UNIQUE,
     PRIMARY KEY(id)
 );
+/* base de datos compañia*/
+create table company(
+    id smallserial NOT NULL,
+    name varchar(30) NOT NULL,
+    description varchar(50),
+    PRIMARY KEY (id)
+);
 
 /* base de datos users*/
 create table users(
@@ -15,20 +22,12 @@ create table users(
     username varchar(30) NOT NULL,
     email varchar(50) UNIQUE,
     password varchar(60) NOT NULL ,
-    company_id smallserial NOT NULL,
+    company_id smallint NOT NULL,
     rol_id smallint NOT NULL , 
     PRIMARY KEY(id),
     FOREIGN KEY(rol_id) REFERENCES rols (id) /* Relacion de tabla users & rols*/
     FOREIGN KEY(company_id) REFERENCES company (id)
 );
-
-/* base de datos compañia*/
-create table company(
-    id smallserial NOT NULL,
-    name varchar(30) NOT NULL,
-    description varchar(50),
-    PRIMARY KEY (id)
-)
 
 /* base de datos Tokens*/
 create table tokens(
@@ -67,9 +66,11 @@ create table machine(
     status_machine_id smallint NOT NULL,
     last_update timestamp,
     user_id smallserial NOT NULL,
+    company_id smallint NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (section_id) REFERENCES sections (id),
-    FOREIGN KEY (status_machine_id) REFERENCES status_machine (id), 
+    FOREIGN KEY (status_machine_id) REFERENCES status_machine (id),
+    FOREIGN KEY (company_id) REFERENCES company (id), 
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
 

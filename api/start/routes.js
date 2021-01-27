@@ -25,3 +25,18 @@ Route.post("api/v1/register" ,  "UserController.store");
 Route.post("api/v1/login", "UserController.login");
 Route.get("api/v1/user", "UserController.index");
 Route.get("api/v1/loginUsersAutomatico", "UserController.loginToken");
+
+
+//lineas
+Route.post("api/v1/line" ,  "LineController.store");
+
+
+
+
+//Maquinas
+Route.post("api/v1/machine" ,  "MachineController.store");
+
+
+
+//Company
+Route.post("api/v1/company" ,  "CompanyController.store");

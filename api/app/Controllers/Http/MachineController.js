@@ -1,23 +1,12 @@
 // @ts-nocheck
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
-/**
- * Resourceful controller for interacting with machines
- */
+const Response = use('App/Models/Response');
+const { validate } = use('Validator');
+const Machine = use("App/Models/Machine");
+var moment = require('moment');
 class MachineController {
-  /**
-   * Show a list of all machines.
-   * GET machines
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
+  
   async index ({ request, response, view }) {
   }
 
@@ -41,7 +30,39 @@ class MachineController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store ({ request, response , auth }) {
+    try {
+      const user = await auth.getUser();
+      let {name , section_id , description  , company_id} = request.all();
+      const rules = {
+        name: 'required',
+        section_id: 'required',
+        description: 'required',
+        company_id: 'required'
+      }
+      
+      let validation = await validate({ name , section_id , description, company_id}, rules);
+      if(validation.fails()){
+       return response.status(404).json({message: "Datos Insufiente"});
+      }
+      if(user.id == 1){
+        const machine = await Machine.create({
+          name,
+          section_id,
+          description,
+          status_machine_id : 1,
+          last_update: moment().format('YYYY-MM-DD HH:mm:ss '),
+          company_id,
+          user_id: user.id
+        })
+        return response.status(200).json({message: "Maquina creado con exito!"})
+      }else{
+        return response.status(400).json({menssage: "Usuario sin permiso suficiente para realizar esta operacion!"})
+      }
+    } catch (error) {
+      console.log(error)
+      return response.status(400).json({ menssage: 'Hubo un error al intentar realizar la operación', error })
+    }
   }
 
   /**
