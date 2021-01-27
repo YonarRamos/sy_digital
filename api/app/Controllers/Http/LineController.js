@@ -1,24 +1,12 @@
-// @ts-nocheck
+
 'use strict'
-
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
-/**
- * Resourceful controller for interacting with lines
- */
+const Response = use('App/Models/Response');
+const { validate } = use('Validator');
+const Line = use("App/Models/Line");
 class LineController {
-  /**
-   * Show a list of all lines.
-   * GET lines
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+ 
+  async index ({ request, response, auth }) {
+    
   }
 
   /**

@@ -22,8 +22,8 @@ class UserController {
       page = page || 1
       perPage = perPage || 10
       
-      let users = await User.query().with('company').paginate(page , perPage)
-      /*  users = users.toJSON();
+      let users = await User.query().with('rols').with('company').paginate(page , perPage)
+        users = users.toJSON();
         console.log(users)
       var arrPromises =  users.data.map(item=>{
         return{
@@ -31,11 +31,12 @@ class UserController {
         "username": item.username,
         "email": item.email,
         "rol": item.rols.rol,
+        "company": item.company.name
         }
       })
       let resp = await Promise.all(arrPromises)
       //console.log(users.data)
-      users.data = resp*/
+      users.data = resp
        response.status(200).json({message: 'Listado de Usuario', data : users})
     } catch (error) {
       console.log(error)
@@ -97,6 +98,7 @@ class UserController {
   async login ({request ,response , auth}){
     try {
       const { email , password} = request.all();
+      console.log(email, password)
       let validationUser = await User.findBy('email' , email);
       validationUser = validationUser.toJSON();
       if(validationUser != null){

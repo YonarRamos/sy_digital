@@ -10,7 +10,9 @@ class User extends Model {
   static get createdAtColumn() {
     return null;
 }
-    
+static get table () {
+  return 'users';
+}
 static get updatedAtColumn() {
     return null;
 }
