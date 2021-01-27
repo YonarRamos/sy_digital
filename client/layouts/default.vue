@@ -6,9 +6,17 @@
       :clipped="clipped"
       fixed
       app
+      color="#f5f5f5"
     >
 
 <v-list>
+      <v-list-item to="/" color="error">
+        <v-list-item-icon>
+          <v-icon>mdi-home</v-icon>
+        </v-list-item-icon>
+      <v-list-item-title>Home</v-list-item-title>
+      </v-list-item>
+
       <v-list-group
         :value="false"
         prepend-icon="build"
@@ -128,11 +136,13 @@
         </v-list-group>
       </v-list-group>
     </v-list>
+  <password/>
+  <div>
+    <img class="img" src="SYDIGITAL_GRAY.png" alt="">
+  </div>
+</v-navigation-drawer>
 
-      <password/>
-    </v-navigation-drawer>
-
-<v-app-bar :clipped-left="clipped" fixed app color="#808080">
+<v-app-bar :clipped-left="clipped" fixed app color="#F65B4B">
       <!-- <v-app-bar-nav-icon dark @click.stop="drawer = !drawer" />-->
       <v-btn @click.stop="drawer = !drawer" dark icon><v-icon>list</v-icon></v-btn>
       
@@ -147,7 +157,7 @@
         </template>
 
        <v-list>
-          <v-list-item class="menuUser pointer">
+          <v-list-item v-if="rol" class="menuUser pointer">
             <v-list-item-title  @click="toggleDialogPassword(true)">
               <v-icon left color="error" align="center" >lock</v-icon>
               Cambiar Contraseña
@@ -182,6 +192,7 @@ export default {
   data() {
     return {
       username: Cookies.get('username'),
+      rol: Cookies.get('rol'),
       maquinas: [
         ['T. de Maquina', 'mdi-cog-outline']
       ],
@@ -218,12 +229,19 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["SET_DESLOGIN"]),
+    ...mapMutations(["SET_DESLOGIN","toggleDialogPassword"]),
   },
 }
 </script>
 
 <style scoped>
+.img {
+  top: 340px;
+  left: 25px;
+  width: 200px;
+  position: relative;
+  padding-bottom: 15px;
+}
 a {  
   text-decoration: none;
   color:rgb(0, 0, 0, 0.87);

@@ -13,6 +13,8 @@
                 height="155"
                 width="155"
                 class="tarjeta"
+                elevation="2"
+                :to="item.url"
               >
                 <v-card-text class="d-flex justify-center pb-0">
                   <v-icon size="80"> {{item.icon}} </v-icon>
@@ -36,8 +38,8 @@ export default {
   data(){
     return{
       opciones:[
-        {titulo:'Avisos', icon:'report_problem'},
-        {titulo:'O.T', icon:'fact_check'},
+        {titulo:'Avisos', icon:'report_problem', url:'#'},
+        {titulo:'O.T', icon:'fact_check', url:'/ot'},
         {titulo:'Consultas', icon:'build'},
         {titulo:'Acciones', icon:'search'},
         {titulo:'Acciones', icon:'widgets'}
@@ -56,15 +58,14 @@ export default {
 <style lang="css" scoped>
 .tarjeta{
   cursor: pointer; 
-  border:solid rgb(197, 193, 193);
   color: grey;
+  background: #EAEAEA;
 }
+
 .tarjeta:hover{
-  background: #808080;
-  color: white !important;
+  border:solid #FF8888;
+
 }
-
-
 
 a{
   text-decoration: none;

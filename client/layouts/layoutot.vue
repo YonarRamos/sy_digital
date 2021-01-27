@@ -1,10 +1,10 @@
 <template>
   <v-app dark>
     <v-app-bar fixed app color="#F65B4B">
-      <NuxtLink to="/ot">
+      <NuxtLink to="/">
       <v-btn icon ><v-icon color="white" > west </v-icon></v-btn>
       </NuxtLink>
-      <span><h3 class="white--text">Gestionar OT</h3></span>
+      <span><h3 class="white--text">Volver al Menú Principal</h3></span>
     </v-app-bar>
 
     <v-main>

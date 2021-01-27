@@ -154,6 +154,6 @@ export default {
 
 <style scoped>
 .v-card-titulo {
-  background: #295382;
+  background: #F65B4B;
 }
 </style>
