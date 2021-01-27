@@ -1,22 +1,11 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
-/**
- * Resourceful controller for interacting with companies
- */
+const Response = use('App/Models/Response');
+const { validate } = use('Validator');
+const Company = use("App/Models/Company");
+var moment = require('moment');
 class CompanyController {
-  /**
-   * Show a list of all companies.
-   * GET companies
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
+  
   async index ({ request, response, view }) {
   }
 
@@ -40,7 +29,28 @@ class CompanyController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store ({ request, response , auth }) {
+    try {
+      const user =  await auth.getUser(); 
+      let{ name , description}= request.all()
+      const rules = {
+        name: 'required',
+      }
+      
+      let validation = await validate({ name }, rules);
+      if(validation.fails()){
+       return response.status(404).json({message: "Datos Insufiente"});
+      }
+      if(user.id == 1){
+        const company = await Company.create({
+          name, 
+          description
+        })
+        return response.status(200).json({message: 'Empresa Cargada con exito!' , data: company})
+      }
+    } catch (error) {
+      
+    }
   }
 
   /**
