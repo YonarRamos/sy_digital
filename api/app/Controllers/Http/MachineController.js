@@ -6,8 +6,41 @@ const { validate } = use('Validator');
 const Machine = use("App/Models/Machine");
 var moment = require('moment');
 class MachineController {
-  
-  async index ({ request, response, view }) {
+
+  async index({ request, response, auth }) {
+    try {
+      const user = await auth.getUser();
+      var query = Machine.query();
+      var {
+        page,
+        perPage,
+      } = request.all();
+      //seteo valores por defectos
+      page = page || 1
+      perPage = perPage || 10
+      let machine = await Machine.query().with('company').with('section').with('statusMachine').with('users').paginate(page, perPage);
+      machine = machine.toJSON();
+      
+      var arrPromiseMachine = machine.data.map(item => {
+        return {
+          "name": item.name,
+          "section_id": item.section.name,
+          "description": item.description,
+          "status_machine_id": item.statusMachine.status,
+          "last_update": item.last_update,
+          "user_id": item.users.username,
+          "company_id": item.company.name,
+        }
+      })
+      let resp = await Promise.all(arrPromiseMachine)
+      machine.data = resp
+      response.status(200).json({ message: 'Listado de Maquina', data: machine })
+    } catch (error) {
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
+    }
   }
 
   /**
@@ -19,7 +52,7 @@ class MachineController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create ({ request, response, view }) {
+  async create({ request, response, view }) {
   }
 
   /**
@@ -30,34 +63,34 @@ class MachineController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response , auth }) {
+  async store({ request, response, auth }) {
     try {
       const user = await auth.getUser();
-      let {name , section_id , description  , company_id} = request.all();
+      let { name, section_id, description, company_id } = request.all();
       const rules = {
         name: 'required',
         section_id: 'required',
         description: 'required',
         company_id: 'required'
       }
-      
-      let validation = await validate({ name , section_id , description, company_id}, rules);
-      if(validation.fails()){
-       return response.status(404).json({message: "Datos Insufiente"});
+
+      let validation = await validate({ name, section_id, description, company_id }, rules);
+      if (validation.fails()) {
+        return response.status(404).json({ message: "Datos Insufiente" });
       }
-      if(user.id == 1){
+      if (user.id == 1) {
         const machine = await Machine.create({
           name,
           section_id,
           description,
-          status_machine_id : 1,
-          last_update: moment().format('YYYY-MM-DD HH:mm:ss '),
+          status_machine_id: 1,
+          last_update: moment().format('YYYY-MM-DD HH:mm:ss'),
           company_id,
           user_id: user.id
         })
-        return response.status(200).json({message: "Maquina creado con exito!"})
-      }else{
-        return response.status(400).json({menssage: "Usuario sin permiso suficiente para realizar esta operacion!"})
+        return response.status(200).json({ message: "Maquina creado con exito!" })
+      } else {
+        return response.status(400).json({ menssage: "Usuario sin permiso suficiente para realizar esta operacion!" })
       }
     } catch (error) {
       console.log(error)
@@ -74,7 +107,7 @@ class MachineController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params, request, response, view }) {
   }
 
   /**
@@ -86,7 +119,7 @@ class MachineController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async edit ({ params, request, response, view }) {
+  async edit({ params, request, response, view }) {
   }
 
   /**
@@ -97,7 +130,7 @@ class MachineController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response }) {
   }
 
   /**
@@ -108,7 +141,7 @@ class MachineController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, request, response }) {
   }
 }
 

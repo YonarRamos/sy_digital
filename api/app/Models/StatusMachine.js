@@ -4,6 +4,9 @@
 const Model = use('Model')
 
 class StatusMachine extends Model {
+    static get table () {
+        return 'status_machine';
+      }
 }
 
 module.exports = StatusMachine

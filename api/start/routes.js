@@ -34,11 +34,12 @@ Route.post("api/v1/line" ,  "LineController.store");
 
 
 //Maquinas
+
+Route.get("api/v1/machine" ,  "MachineController.index");
 Route.post("api/v1/machine" ,  "MachineController.store");
 
 
 
 //Company
-
 Route.get("api/v1/company" ,  "CompanyController.index");
 Route.post("api/v1/company" ,  "CompanyController.store");
