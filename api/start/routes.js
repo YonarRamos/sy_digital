@@ -39,4 +39,6 @@ Route.post("api/v1/machine" ,  "MachineController.store");
 
 
 //Company
+
+Route.get("api/v1/company" ,  "CompanyController.index");
 Route.post("api/v1/company" ,  "CompanyController.store");

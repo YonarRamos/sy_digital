@@ -6,7 +6,25 @@ const Company = use("App/Models/Company");
 var moment = require('moment');
 class CompanyController {
   
-  async index ({ request, response, view }) {
+  async index ({ request, response, auth }) {
+    try {
+      const user = await auth.getUser();
+      var query = Company.query();
+      var{
+        page , 
+        perPage,
+      }= request.all();
+      //seteo valores por defectos
+      page = page || 1
+      perPage = perPage || 10
+      let company = await Company.query().paginate(page , perPage);
+      response.status(200).json({message: 'Listado de Company', data : company})
+    } catch (error) {
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({  menssage: 'Hubo un error al realizar la operación', error  })
+    }
   }
 
   /**
