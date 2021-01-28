@@ -5,6 +5,7 @@ const Response = use('App/Models/Response');
 const { validate } = use('Validator');
 const Machine = use("App/Models/Machine");
 var moment = require('moment');
+const Database = use("Database");
 class MachineController {
 
   async index({ request, response, auth }) {
@@ -88,7 +89,9 @@ class MachineController {
           company_id,
           user_id: user.id
         })
+        const TableMachineCompany = await Database.from('company_machine').insert([{company_id: company_id , machine_id: machine.id}])
         return response.status(200).json({ message: "Maquina creado con exito!" })
+        
       } else {
         return response.status(400).json({ menssage: "Usuario sin permiso suficiente para realizar esta operacion!" })
       }

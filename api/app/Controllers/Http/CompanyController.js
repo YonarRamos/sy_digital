@@ -17,7 +17,9 @@ class CompanyController {
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      let company = await Company.query().paginate(page , perPage);
+      let company = await Company.query().with('machine').paginate(page , perPage);
+      company = company.toJSON();
+     
       response.status(200).json({message: 'Listado de Company', data : company})
     } catch (error) {
       if (error.name == 'InvalidJwtToken') {
@@ -71,16 +73,22 @@ class CompanyController {
     }
   }
 
-  /**
-   * Display a single company.
-   * GET companies/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show ({ params, request, response, view }) {
+  async show({ params, request, response, auth }) {
+    try {
+      const user = await auth.getUser()
+      var id = params.id
+      let company = await Company.query().with('machine').where('id', id).fetch();
+      return response.status(200).json({ menssage: 'Company', data: company });
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({
+        menssage: 'Grupo no encontrado',
+        id
+      })
+    }
   }
 
   /**

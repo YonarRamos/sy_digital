@@ -13,9 +13,17 @@ create table company(
     id smallserial NOT NULL,
     name varchar(30) NOT NULL,
     description varchar(50),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+
 );
 
+/*base de datos pivot machine & company*/
+create table company_machine(
+    company_id smallint,
+    machine_id smallint,
+    FOREIGN KEY(company_id) REFERENCES company (id),
+    FOREIGN KEY(machine_id) REFERENCES machine (id)
+)
 /* base de datos users*/
 create table users(
     id smallserial NOT NULL , 

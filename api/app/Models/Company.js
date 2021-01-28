@@ -13,6 +13,9 @@ class Company extends Model {
 static get updatedAtColumn() {
     return null;
 }
+machine () {
+  return this.belongsToMany('App/Models/Machine', 'company_id' , 'machine_id').pivotTable('company_machine')
+}
 }
 
 module.exports = Company
