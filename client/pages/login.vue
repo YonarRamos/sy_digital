@@ -52,7 +52,7 @@
 <script>
 import { mapMutations } from 'vuex';
 import axios from '../plugins/axios';
-import registro from "@/components/common/registro.vue";
+import registro from "@/components/login/registro.vue";
 
 export default {
   layout: 'layoutnull',

@@ -23,7 +23,7 @@
         color="error"
       >
         <template v-slot:activator>
-          <v-list-item-title>Equipos</v-list-item-title>
+          <v-list-item-title>Clientes</v-list-item-title>
         </template>
 
         <v-list-group
@@ -31,17 +31,21 @@
           no-action
           sub-group
           color="error"
+          v-for="(item, i) in clientes"
+          :key="i"
         >
           <template v-slot:activator>
             <v-list-item-content>
-              <v-list-item-title>Maquinas</v-list-item-title>
+              <v-list-item-title>{{item.name}}</v-list-item-title>
             </v-list-item-content>
           </template>
 
           <v-list-item
-            v-for="([title, icon], i) in maquinas"
+            v-for="([title, icon, url], i) in opciones"
             :key="i"
             link
+            :to="url"
+            @click="cargarClienteID(item), asignarIndexTab(i+1), drawer=false"
           >
             <v-list-item-title v-text="title"></v-list-item-title>
 
@@ -51,29 +55,9 @@
           </v-list-item>
         </v-list-group>
 
-        <v-list-group
-          no-action
-          sub-group
-          color="error"
-        >
-          <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title>Lineas</v-list-item-title>
-            </v-list-item-content>
-          </template>
-
-          <v-list-item
-            v-for="([title, icon], i) in lineas"
-            :key="i"
-            link
-          >
-            <v-list-item-title v-text="title"></v-list-item-title>
-
-            <v-list-item-icon>
-              <v-icon v-text="icon"></v-icon>
-            </v-list-item-icon>
-          </v-list-item>
-        </v-list-group>
+<!--         <v-list-group
+        </v-list-group> -->
+        
       </v-list-group>
 
             <v-list-group
@@ -123,9 +107,10 @@
           </template>
 
           <v-list-item
-            v-for="([title, icon], i) in ot"
+            v-for="([title, icon, url], i) in ot"
             :key="i"
             link
+            :to="url"
           >
             <v-list-item-title v-text="title"></v-list-item-title>
 
@@ -182,6 +167,7 @@
 
 <script>
 import Cookies from "js-cookie";
+import axios from "@/plugins/axios";
 import { mapState, mapMutations } from "vuex";
 import password from "@/components/cambiarPassword";
 
@@ -193,8 +179,12 @@ export default {
     return {
       username: Cookies.get('username'),
       rol: Cookies.get('rol'),
-      maquinas: [
-        ['T. de Maquina', 'mdi-cog-outline']
+      clientes:[],
+      opciones: [
+        ['Equipos', 'dns','/opciones'],
+        ['Lineas', 'leaderboard','/opciones'],
+        ['Máquinas', 'build','/opciones'],
+        ['Usuarios', 'people_alt','/opciones']
       ],
       lineas: [
         ['T. de Linea', 'mdi-cog-outline']
@@ -210,18 +200,6 @@ export default {
       clipped: true,
       drawer: false,
       fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
-        },
-      ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
@@ -229,8 +207,28 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["SET_DESLOGIN","toggleDialogPassword"]),
+    ...mapMutations(["SET_DESLOGIN","toggleDialogPassword","cargarClienteID","asignarIndexTab"]),
+    async cargarOpcionesSidebar(){
+      try {
+        let token = Cookies.get('token');
+        await axios.get('company',{
+              headers: { Authorization: `Bearer ${token}`}
+              })
+        .then((res)=>{
+          console.log(res.data.data.data)
+          this.clientes = res.data.data.data;
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
   },
+  mounted(){
+    this.cargarOpcionesSidebar();
+  },
+  computed:{
+    ...mapState(["indexTab"])
+  }
 }
 </script>
 

@@ -17,7 +17,10 @@ export const state = () => ({
     alertType: "",
   },
   dialogPassword: false,
-  ots:[]
+  ots:[],
+  clienteID:1,
+  clienteName:'Seleccione una empresa',
+  indexTab:'tab-1'
 });
 
 export const mutations = {
@@ -59,6 +62,13 @@ export const mutations = {
   cargarOTS(state, payload){
     state.ots.push(payload)
   },
+  cargarClienteID(state, payload){
+    state.clienteID = payload.id;
+    state.clienteName = payload.name;
+  },
+  asignarIndexTab(state, payload){
+    state.indexTab = `tab-${payload}`
+  }
 
 };
 export const actions = {

@@ -31,7 +31,8 @@ class UserController {
         "username": item.username,
         "email": item.email,
         "rol": item.rols.rol,
-        "company": item.company.name
+        "company_id": item.company.id,
+        "company_name": item.company.name
         }
       })
       let resp = await Promise.all(arrPromises)
@@ -143,7 +144,44 @@ class UserController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  
+  async show({ params, request, response, auth }) {
+    try {
+      const user = await auth.getUser();
+      var query = User.query();
+      var company_id = params.id
+      var{
+        page , 
+        perPage,
+      }= request.all();
+      //seteo valores por defectos
+      page = page || 1
+      perPage = perPage || 10
+      
+      let users = await User.query().with('company').where("company_id", company_id).paginate(page , perPage);
+          users = users.toJSON();
+        console.log(users)
+      var arrPromises =  users.data.map(item=>{
+        return{
+          "id": item.id,
+        "username": item.username,
+        "email": item.email,
+        "rol": item.rol_id,
+        "company_id": item.company.id,
+        "company_name": item.company.name
+        }
+      })
+      let resp = await Promise.all(arrPromises)
+      //console.log(users.data)
+      users.data = resp
+       response.status(200).json({message: 'Listado de Usuario', data : users})
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({  menssage: 'Hubo un error al realizar la operación', error  })
+    }
   }
 
   /**
