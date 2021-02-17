@@ -5,7 +5,6 @@
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </div>
-
         <v-col cols="auto" v-if="dialog">
             <v-dialog
                 transition="dialog-bottom-transition"

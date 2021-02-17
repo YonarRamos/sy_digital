@@ -26,6 +26,13 @@
           <v-list-item-title>Clientes</v-list-item-title>
         </template>
 
+        <v-list-item to="/companies" color="error">
+          <v-list-item-icon>
+            <v-icon>mdi-plus</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Agregar Cliente</v-list-item-title>
+        </v-list-item>
+
         <v-list-group
           :value="false"
           no-action

@@ -64,8 +64,7 @@
 </template>
 
 <script>
-import machine_table from "@/components/machine/machine_table";
-import users_table from "@/components/users/users_table";
+import machine_table from "~/components/machine/machine_table.vue";
 import { mapState } from "vuex";
 import Cookies from "js-cookie";
 import axios from "@/plugins/axios";
