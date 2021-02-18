@@ -21,9 +21,11 @@ create table company(
 create table company_machine(
     company_id smallint,
     machine_id smallint,
+    line_id smallint,
     FOREIGN KEY(company_id) REFERENCES company (id),
-    FOREIGN KEY(machine_id) REFERENCES machine (id)
-)
+    FOREIGN KEY(machine_id) REFERENCES machine (id),
+    FOREIGN KEY(line_id) REFERENCES line (id),
+);
 /* base de datos users*/
 create table users(
     id smallserial NOT NULL , 
@@ -87,9 +89,11 @@ create table line(
    id smallserial NOT NULL, 
    description varchar(250),
    name varchar(30),
+   company_id smallint NOT NULL,
    machine_id smallint NOT NULL,
    PRIMARY KEY(id), 
-   FOREIGN KEY(machine_id) REFERENCES machine (id) /*Relacion de tabla machine & line*/ 
+   FOREIGN KEY(machine_id) REFERENCES machine (id), /*Relacion de tabla machine & line*/ 
+   FOREIGN KEY(company_id) REFERENCES company (id) /*Relacion de tabla company & line*/ 
 );
 
 /* Base de datos machine historicos*/
