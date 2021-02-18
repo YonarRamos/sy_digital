@@ -4,6 +4,7 @@
 const Response = use('App/Models/Response');
 const { validate } = use('Validator');
 const Machine = use("App/Models/Machine");
+const Line = use("App/Models/Line");
 var moment = require('moment');
 const Database = use("Database");
 class MachineController {
@@ -67,7 +68,7 @@ class MachineController {
   async store({ request, response, auth }) {
     try {
       const user = await auth.getUser();
-      let { name, section_id, description, company_id } = request.all();
+      let { name, section_id, description, company_id , line_id} = request.all();
       const rules = {
         name: 'required',
         section_id: 'required',
@@ -79,6 +80,7 @@ class MachineController {
       if (validation.fails()) {
         return response.status(404).json({ message: "Datos Insufiente" });
       }
+     
       if (user.id == 1) {
         const machine = await Machine.create({
           name,
@@ -87,10 +89,12 @@ class MachineController {
           status_machine_id: 1,
           last_update: moment().format('YYYY-MM-DD HH:mm:ss'),
           company_id,
+          line_id,
           user_id: user.id
         })
-        const TableMachineCompany = await Database.from('company_machine').insert([{company_id: company_id , machine_id: machine.id}])
-        return response.status(200).json({ message: "Maquina creado con exito!" })
+        const TableMachineCompany = await Database.from('company_machine').insert([{company_id: company_id , machine_id: machine.id , line_id: line_id}]) 
+
+        return response.status(200).json({ message: "Maquina creado con exito!", data: machine})
         
       } else {
         return response.status(400).json({ menssage: "Usuario sin permiso suficiente para realizar esta operacion!" })

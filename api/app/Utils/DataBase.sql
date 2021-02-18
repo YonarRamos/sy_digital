@@ -76,7 +76,7 @@ create table machine(
     status_machine_id smallint NOT NULL,
     last_update timestamp,
     user_id smallserial NOT NULL,
-    line_id smallint NOT NULL,
+    line_id smallint,
     company_id smallint NOT NULL,
     line_id smallint,
     PRIMARY KEY (id),
@@ -93,9 +93,7 @@ create table line(
    description varchar(250),
    name varchar(30),
    company_id smallint NOT NULL,
-   machine_id smallint,
    PRIMARY KEY(id), 
-   FOREIGN KEY(machine_id) REFERENCES machine (id), /*Relacion de tabla machine & line*/ 
    FOREIGN KEY(company_id) REFERENCES company (id) /*Relacion de tabla company & line*/ 
 );
 

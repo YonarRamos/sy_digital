@@ -30,18 +30,32 @@ class LineController {
   async store ({ request, response , auth }) {
     try {
       const user = await auth.getUser();
-      let { description, name, machine_id } = request.all();
+      let { description, name,  company_id } = request.all();
       const rules = {
         name: 'required',
-        description: 'required',
-        machine_id : 'required'
+        company_id : 'required'
       }
-      let validation = await validate({ name,  description, machine_id }, rules);
+      let validation = await validate({ name, company_id }, rules);
       if (validation.fails()) {
         return response.status(404).json({ message: "Datos Insufiente" });
       }
+      if (user.id == 1) {
+        const line = await Line.create({
+          name,
+          description,
+          company_id
+        })
+       // const TableMachineCompany = await Database.from('company_machine').insert([{company_id: company_id , machine_id: machine.id , line_id: line_id}]) 
+
+        return response.status(200).json({ message: "Maquina creado con exito!", data: line})
+        
+      } else {
+        return response.status(400).json({ menssage: "Usuario sin permiso suficiente para realizar esta operacion!" })
+      }
+
     } catch (error) {
-      
+      console.log(error)
+      return response.status(400).json({ menssage: 'Hubo un error al intentar realizar la operación', error })
     }
   }
 
