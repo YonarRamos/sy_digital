@@ -1,8 +1,10 @@
 <template>
-  <v-container style="background:#F7F7FF;box-shadow: inset 0 0 20px #D0D8F9;">
-     <!--  <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div>  -->
-<!--       <v-container class="pt-0">
+  <v-container>
+    <v-card color="#EBEDEF" >
+      <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div> 
+      <v-container class="pt-0">
         <v-row class="ml-0">
+
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
@@ -14,20 +16,23 @@
               flat
             ></v-text-field>
             
-            <add class="px-3 mb-2" @click="updateTableMachine" />    
+            <add class="px-3 mb-2" @click="updateTableUsers" />    
         
-        </v-row> -->
+        </v-row>
+
         <v-data-table
-          style="background:#F7F7FF"
-          class="mb-3 detalle"
+          class="mb-3"
           :headers="headers"
-          :items="maquinas"
+          :items="usuarios"
           :search="search"
           :disable-sort="true"
-          :server-items-length="totalDataMachine"
-          @pagination="updateTableMachine($event)"
-          :footer-props="{ itemsPerPageOptions: [5, 10, 25] }"
+          :server-items-length="totalDataUsers"
+          @pagination="updateTableUsers($event)"
+          :footer-props="{ itemsPerPageOptions: [1, 10, 25] }"
         >
+          <template v-slot:[`item.rol`]="{ item }">
+            {{ item.rol | rolParse}}
+          </template>
           <template v-slot:[`item.editar`]="{ item }">
             <edit :editar="item" />
           </template>
@@ -36,26 +41,28 @@
             <delet :delete="item" />
           </template>
         </v-data-table>
+      </v-container>
+    </v-card>
   </v-container>
 </template>
 
 <script>
+import add from '@/components/users/add';
 import edit from '@/components/common/editar';
-import add from '@/components/machine/add.vue';
 import delet from '@/components/common/eliminar';
 
 export default {
   props:{
-    maquinas:{
+    usuarios:{
       type: Array,
       required:true
     },
-    totalDataMachine:{
+    totalDataUsers:{
       type: Number,
       required: true
     },
     cliente:{
-      type:String
+      type: String
     }
   },
   components: {
@@ -65,41 +72,42 @@ export default {
   },
   data() {
     return {
-      machine:{
-        name: "",
-        section_id: "",
-        company_id:"",
-        description: "",
+      user:{
+        username:"",
+        email:"",
+        password:null,
+        confirm_password:null,
+        company_id:null,
+        rol_id:null
       },
       search: '',
       company_id: "systelec",
       headers: [
-        { text: 'Nombre', value: 'name', align: 'start', sortable: false },
-        { text: 'Descripcion', value: 'description', sortable: false },
-        { text: 'Sección', value: 'section_id', align: 'center', sortable: false },
-        { text: 'Estatus', value: 'status_machine_id', align: 'center', sortable: false },
-        { text: 'Actualizado', value: 'last_update', align: 'center', sortable: false },
+        { text: 'Username', value: 'username', align: 'start', sortable: false },
+        { text: 'Email', value: 'email', sortable: false },
+        { text: 'Empresa', value: 'company_name', align: 'center', sortable: false },
+        { text: 'Rol', value: 'rol', align: 'center', sortable: false },
         { text: 'Editar', value: 'editar', align: 'center', sortable: false },
         {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false},
       ],
     }
   },
   methods:{
-    updateTableMachine(e){
+    updateTableUsers(e){
       this.$emit('click', e)
     },
+  },
+  filters:{
+    rolParse(value){
+      return value == 1 ? 'Administrador' : 'Operador';
+    }
   },
   mounted(){
   }
 }
 </script>
+
 <style scoped>
-table{
-  transition: display 4s;
-}
-table:active{
-  display: none ;
-}
   .cliente{
     font-weight:bold;
     color: rgb(193, 198, 204);

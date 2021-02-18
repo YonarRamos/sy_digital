@@ -28,12 +28,17 @@
         >
             <template v-slot:expanded-item="{ headers, item }">
               <td :colspan="headers.length" class="pa-0">
-                <machine :maquinas="maquinas" :totalDataMachine="totalDataMachine" :cliente="item.name"/>
+                <machine v-if="selector == 1" :maquinas="maquinas" :totalDataMachine="totalDataMachine" :cliente="item.name"/>
+                <users v-if="selector == 2" :usuarios="usuarios" :totalDataUsers="totalDataUsers" :cliente="item.name"/>
               </td>
             </template>
 
-            <template v-slot:[`item.id`]="{ item }">
-              <a @click="clicked(item, item.id)">Ver detalle</a>
+            <template v-slot:[`item.machine`]="{ item }">
+              <a @click="clickMachine(item, item.id)">Ver detalle</a>
+            </template>
+
+            <template v-slot:[`item.users`]="{ item }">
+              <a @click="clickUsers(item, item.id)">Ver detalle</a>
             </template>
 
             <template v-slot:[`item.editar`]="{ item }">
@@ -58,6 +63,7 @@ import edit from '@/components/common/editar';
 import Add from "~/components/companies/add.vue";
 import delet from '@/components/common/eliminar';
 import machine from "~/components/companies/machine";
+import users from "~/components/companies/users";
 
 export default {
   props:{
@@ -77,12 +83,16 @@ export default {
     edit,
     Add,
     delet,
-    machine
+    machine,
+    users
   },
   data() {
     return {
+        selector:0,
         totalDataMachine:0,
+        totalDataUsers:0,
         maquinas:[],
+        usuarios:[],
         expanded:[],
         companies:[],
         totalDataCompanies:0,
@@ -99,7 +109,7 @@ export default {
         { text: 'Descripcion', value: 'description', sortable: false },
         { text: 'Equipos', value: 'equipos', align: 'center', sortable: false },
         { text: 'Lineas', value: 'lineas', align: 'center', sortable: false },
-        { text: 'Maquinas', value: 'id', align: 'center', sortable: false },
+        { text: 'Maquinas', value: 'machine', align: 'center', sortable: false },
         { text: 'Usuarios', value: 'users', align: 'center', sortable: false },
         { text: 'Editar', value: 'editar', align: 'center', sortable: false },
         {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false},
@@ -107,12 +117,22 @@ export default {
     }
   },
   methods:{
-    clicked(value, clienteID) {
+    clickMachine(value, clienteID) {
+      this.selector = 1;
       if(this.expanded.length > 0){
         this.expanded = []
       }else{
       this.expanded.push(value)
       this.cargarDatosTablaMachine(null,clienteID);
+      }
+    },
+    clickUsers(value, clienteID) {
+      this.selector = 2;
+      if(this.expanded.length > 0){
+        this.expanded = []
+      }else{
+      this.expanded.push(value)
+      this.cargarDatosTablaUsers(null,clienteID);
       }
     },
     getCompanies(){
@@ -154,6 +174,29 @@ export default {
           console.log(error)
         }
       },
+      async cargarDatosTablaUsers(e, clienteID){
+        try {
+            let token = Cookies.get('token');
+            e ? this.page = e.page : this.page = 1;
+            e ? this.perPage = e.itemsPerPage : this.perPage = 10;
+
+            await axios.get(`user/${clienteID}`,
+              {
+                headers: { Authorization: `Bearer ${token}`},
+                params: {
+                page: this.page ,
+                perPage: this.perPage
+                }
+              })
+          .then((res)=>{
+            console.log('Users:', res.data.data.data);
+            this.usuarios = res.data.data.data;
+            this.totalDataUsers = this.usuarios.length;
+          })
+        } catch (error) {
+          console.log(error)
+        }
+      }
   },
   mounted(){
       this.getCompanies();
