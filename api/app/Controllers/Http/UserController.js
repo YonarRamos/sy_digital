@@ -22,20 +22,22 @@ class UserController {
       page = page || 1
       perPage = perPage || 10
       
-      let users = await User.query().with('company').paginate(page , perPage)
-      /*  users = users.toJSON();
+      let users = await User.query().with('company').with('rols').paginate(page , perPage)
+        users = users.toJSON();
         console.log(users)
       var arrPromises =  users.data.map(item=>{
         return{
           "id": item.id,
         "username": item.username,
         "email": item.email,
+        "company_id": item.company.id, 
+        "company_name": item.company.name,
         "rol": item.rols.rol,
         }
       })
       let resp = await Promise.all(arrPromises)
       //console.log(users.data)
-      users.data = resp*/
+      users.data = resp
        response.status(200).json({message: 'Listado de Usuario', data : users})
     } catch (error) {
       console.log(error)
@@ -141,7 +143,34 @@ class UserController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params, request, response, auth }) {
+    try {
+      const user = await auth.getUser()
+      var id = params.id
+      let users = await User.query().with('company').with('rols').where('id', id).fetch();
+      users = users.toJSON();
+      var arrPromisesUsers = users.map(item =>{
+        return{
+          "id": item.id,
+          "username": item.username,
+          "email": item.email,
+          "company_id": item.company.id, 
+          "company_name": item.company.name,
+          "rol": item.rols.rol,
+        }
+      })
+      const resp = await Promise.all(arrPromisesUsers);
+      return response.status(200).json({ menssage: 'Usuario', data: resp });
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({
+        menssage: 'Grupo no encontrado',
+        id
+      })
+    }
   }
 
   /**

@@ -76,9 +76,12 @@ create table machine(
     status_machine_id smallint NOT NULL,
     last_update timestamp,
     user_id smallserial NOT NULL,
+    line_id smallint NOT NULL,
     company_id smallint NOT NULL,
+    line_id smallint,
     PRIMARY KEY (id),
     FOREIGN KEY (section_id) REFERENCES sections (id),
+    FOREIGN KEY (line_id) REFERENCES line (id),
     FOREIGN KEY (status_machine_id) REFERENCES status_machine (id),
     FOREIGN KEY (company_id) REFERENCES company (id), 
     FOREIGN KEY (user_id) REFERENCES users (id)
@@ -90,7 +93,7 @@ create table line(
    description varchar(250),
    name varchar(30),
    company_id smallint NOT NULL,
-   machine_id smallint NOT NULL,
+   machine_id smallint,
    PRIMARY KEY(id), 
    FOREIGN KEY(machine_id) REFERENCES machine (id), /*Relacion de tabla machine & line*/ 
    FOREIGN KEY(company_id) REFERENCES company (id) /*Relacion de tabla company & line*/ 
@@ -105,11 +108,13 @@ create table old_machine(
     section_id int NOT NULL,
     description varchar(250),
     status_machine_id smallint NOT NULL , 
+    line_id smallint NOT NULL,
     last_update timestamp ,
     user_id smallserial NOT NULL,
     justification varchar(250),
     PRIMARY KEY (id),
     FOREIGN KEY (section_id) REFERENCES sections (id),
+    FOREIGN KEY (line_id) REFERENCES line (id),
     FOREIGN KEY (status_machine_id) REFERENCES status_machine (id), 
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
