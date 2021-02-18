@@ -22,8 +22,8 @@ class UserController {
       page = page || 1
       perPage = perPage || 10
       
-      let users = await User.query().with('rols').with('company').paginate(page , perPage)
-        users = users.toJSON();
+      let users = await User.query().with('company').paginate(page , perPage)
+      /*  users = users.toJSON();
         console.log(users)
       var arrPromises =  users.data.map(item=>{
         return{
@@ -31,13 +31,11 @@ class UserController {
         "username": item.username,
         "email": item.email,
         "rol": item.rols.rol,
-        "company_id": item.company.id,
-        "company_name": item.company.name
         }
       })
       let resp = await Promise.all(arrPromises)
       //console.log(users.data)
-      users.data = resp
+      users.data = resp*/
        response.status(200).json({message: 'Listado de Usuario', data : users})
     } catch (error) {
       console.log(error)
@@ -68,7 +66,7 @@ class UserController {
         username: 'required',
         email: 'required',
         password: 'required',
-        rol_id: 'required',
+        rol_id: 'required', 
         confirm_password: 'required',
         company_id: 'required'
       }
@@ -99,7 +97,6 @@ class UserController {
   async login ({request ,response , auth}){
     try {
       const { email , password} = request.all();
-      console.log(email, password)
       let validationUser = await User.findBy('email' , email);
       validationUser = validationUser.toJSON();
       if(validationUser != null){
@@ -144,44 +141,7 @@ class UserController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  
-  async show({ params, request, response, auth }) {
-    try {
-      const user = await auth.getUser();
-      var query = User.query();
-      var company_id = params.id
-      var{
-        page , 
-        perPage,
-      }= request.all();
-      //seteo valores por defectos
-      page = page || 1
-      perPage = perPage || 10
-      
-      let users = await User.query().with('company').where("company_id", company_id).paginate(page , perPage);
-          users = users.toJSON();
-        console.log(users)
-      var arrPromises =  users.data.map(item=>{
-        return{
-          "id": item.id,
-        "username": item.username,
-        "email": item.email,
-        "rol": item.rol_id,
-        "company_id": item.company.id,
-        "company_name": item.company.name
-        }
-      })
-      let resp = await Promise.all(arrPromises)
-      //console.log(users.data)
-      users.data = resp
-       response.status(200).json({message: 'Listado de Usuario', data : users})
-    } catch (error) {
-      console.log(error)
-      if (error.name == 'InvalidJwtToken') {
-        return response.status(400).json({ menssage: 'Usuario no Valido' })
-      }
-      return response.status(400).json({  menssage: 'Hubo un error al realizar la operación', error  })
-    }
+  async show ({ params, request, response, view }) {
   }
 
   /**

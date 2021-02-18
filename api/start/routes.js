@@ -30,9 +30,7 @@ Route.get("api/v1/loginUsersAutomatico", "UserController.loginToken");
 
 //lineas
 Route.post("api/v1/line" ,  "LineController.store");
-
-
-
+Route.get("api/v1/line", "LineController.index");
 
 //Maquinas
 
@@ -43,5 +41,6 @@ Route.post("api/v1/machine" ,  "MachineController.store");
 
 //Company
 Route.get("api/v1/company" ,  "CompanyController.index");
+Route.get("api/v1/companyName" ,  "CompanyController.CompanyName");
 Route.get("api/v1/company/:id" ,  "CompanyController.show");
 Route.post("api/v1/company" ,  "CompanyController.store");

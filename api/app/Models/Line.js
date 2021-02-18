@@ -4,6 +4,9 @@
 const Model = use('Model')
 
 class Line extends Model {
+    static get table () {
+        return 'line';
+      }
 }
 
 module.exports = Line

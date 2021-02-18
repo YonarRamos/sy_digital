@@ -91,16 +91,24 @@ class CompanyController {
     }
   }
 
-  /**
-   * Render a form to update an existing company.
-   * GET companies/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async CompanyName ({ params, request, response,}) {
+    try {
+      var query = Company.query();
+      let company = await Company.query().fetch();
+      company = company.toJSON();
+      console.log(company)
+      let ArraPromises = company.map(it =>{
+        return{
+          "id": it.id,
+          "name": it.name
+        }
+      })
+      const resp = await Promise.all(ArraPromises);
+      return response.status(200).json({menssage: 'Company', data: resp})
+    } catch (error) {
+      console.log(error)
+      return response.status(400).json({  menssage: 'Hubo un error al realizar la operación', error  }) 
+    }
   }
 
   /**

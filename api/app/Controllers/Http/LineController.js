@@ -6,41 +6,46 @@ const Line = use("App/Models/Line");
 class LineController {
  
   async index ({ request, response, auth }) {
-    
+    try {
+      const user = await auth.getUser();
+      var query = Line.query();
+      var {
+        page,
+        perPage,
+      } = request.all();
+      //seteo valores por defectos
+      page = page || 1
+      perPage = perPage || 10
+      const linea = await Line.query().paginate(page, perPage);
+      response.status(200).json({ message: 'Listado de Linea', data: linea })
+    } catch (error) {
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
+    }  
   }
 
-  /**
-   * Render a form to be used for creating a new line.
-   * GET lines/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  
+  async store ({ request, response , auth }) {
+    try {
+      const user = await auth.getUser();
+      let { description, name, machine_id } = request.all();
+      const rules = {
+        name: 'required',
+        description: 'required',
+        machine_id : 'required'
+      }
+      let validation = await validate({ name,  description, machine_id }, rules);
+      if (validation.fails()) {
+        return response.status(404).json({ message: "Datos Insufiente" });
+      }
+    } catch (error) {
+      
+    }
   }
 
-  /**
-   * Create/save a new line.
-   * POST lines
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store ({ request, response }) {
-  }
-
-  /**
-   * Display a single line.
-   * GET lines/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
+  
   async show ({ params, request, response, view }) {
   }
 
