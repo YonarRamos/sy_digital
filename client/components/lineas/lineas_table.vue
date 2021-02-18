@@ -1,12 +1,13 @@
 <template>
-  <v-container style="background:#F7F7FF;box-shadow: inset 0 0 20px #D0D8F9;">
-     <!--  <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div>  -->
-<!--       <v-container class="pt-0">
+  <v-container>
+    <v-card color="#EBEDEF">
+      <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div> 
+      <v-container class="pt-0">
         <v-row class="ml-0">
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="Buscar en Maquinas"
+              label="Buscar en Lineas"
               background-color="white"
               single-line
               hide-details
@@ -16,10 +17,9 @@
             
             <add class="px-3 mb-2" @click="updateTableMachine" />    
         
-        </v-row> -->
+        </v-row>
         <v-data-table
-          style="background:#F7F7FF"
-          class="mb-3 detalle"
+          class="mb-3"
           :headers="headers"
           :items="maquinas"
           :search="search"
@@ -36,6 +36,8 @@
             <delet :delete="item" />
           </template>
         </v-data-table>
+      </v-container>
+    </v-card>
   </v-container>
 </template>
 
@@ -94,12 +96,6 @@ export default {
 }
 </script>
 <style scoped>
-table{
-  transition: display 4s;
-}
-table:active{
-  display: none ;
-}
   .cliente{
     font-weight:bold;
     color: rgb(193, 198, 204);

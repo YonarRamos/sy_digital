@@ -40,6 +40,21 @@
         :value="'tab-' + i"
       >
         <v-card flat>
+          <equipos-table 
+          v-if="i==1" 
+          :maquinas="maquinas"
+          :cliente="clienteName"
+          :totalDataMachine="totalDataMachine ? totalDataMachine : totalDataMachine = 10" 
+          ref="equipos-table" 
+          @click="cargarDatosTablaMachine"/>
+
+          <lineas-table 
+          v-if="i==2" 
+          :maquinas="maquinas"
+          :cliente="clienteName"
+          :totalDataMachine="totalDataMachine ? totalDataMachine : totalDataMachine = 10" 
+          ref="equipos-table" 
+          @click="cargarDatosTablaMachine"/>
 
           <machine-table 
           v-if="i==3" 
@@ -64,17 +79,22 @@
 </template>
 
 <script>
-import machine_table from "~/components/machine/machine_table.vue";
+import Equipos_table from '~/components/equipos/equipos_table.vue';
+import Lineas_table from '~/components/lineas/lineas_table.vue';
+import Machine_table from "~/components/machine/machine_table.vue";
+import Users_table from '~/components/users/users_table.vue';
 import { mapState } from "vuex";
 import Cookies from "js-cookie";
 import axios from "@/plugins/axios";
-import Users_table from '~/components/users/users_table.vue';
+
 
   export default {
       middleware: "NOAUTH",
       components:{
-          machine_table,
-            Users_table
+          Machine_table,
+            Users_table,
+            Equipos_table,
+            Lineas_table
       },
     data () {
       return {
@@ -88,6 +108,29 @@ import Users_table from '~/components/users/users_table.vue';
       }
     },
     methods:{
+      async cargarDatosTablaEquipos(e){
+        try {
+/*             let token = Cookies.get('token');
+            e ? this.page = e.page : this.page = 1;
+            e ? this.perPage = e.itemsPerPage : this.perPage = 10;
+
+            await axios.get(`company/${this.clienteID}`,
+              {
+                headers: { Authorization: `Bearer ${token}`},
+                params: {
+                page: this.page ,
+                perPage: this.perPage
+                }
+              })
+          .then((res)=>{
+            console.log('Maquinas:', res.data.data[0].machine);
+            this.maquinas = res.data.data[0].machine;  
+            this.totalDataMachine = res.data.data[0].machine.length;
+          }) */
+        } catch (error) {
+          console.log(error)
+        }
+      },
       async cargarDatosTablaMachine(e){
         try {
             let token = Cookies.get('token');
@@ -135,7 +178,6 @@ import Users_table from '~/components/users/users_table.vue';
           console.log(error)
         }
       }
-      
     },
     watch:{
       indexTab: function(){
