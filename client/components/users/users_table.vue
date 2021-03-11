@@ -8,7 +8,7 @@
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="Buscar en Maquinas"
+              label="Buscar en Usuarios"
               background-color="white"
               single-line
               hide-details
@@ -16,7 +16,7 @@
               flat
             ></v-text-field>
             
-            <add class="px-3 mb-2" @click="updateTableUsers" />    
+            <add class="px-3 mb-2" @click="updateTableUsers" />  
         
         </v-row>
 
@@ -38,7 +38,7 @@
           </template>
 
           <template v-slot:[`item.eliminar`]="{ item }">
-            <delet :delete="item" />
+            <delete :delete="item" />
           </template>
         </v-data-table>
       </v-container>
@@ -47,9 +47,9 @@
 </template>
 
 <script>
-import add from '@/components/users/add';
-import edit from '@/components/common/editar';
-import delet from '@/components/common/eliminar';
+import Add from '@/components/users/AddUser.vue';
+import Edit from '@/components/users/EditUser.vue';
+import Delete from '@/components/users/DeleteUser';
 
 export default {
   props:{
@@ -59,16 +59,15 @@ export default {
     },
     totalDataUsers:{
       type: Number,
-      required: true
     },
     cliente:{
       type: String
     }
   },
   components: {
-    edit,
-    add,
-    delet,
+    Add,
+    Edit,
+    Delete
   },
   data() {
     return {

@@ -7,7 +7,7 @@
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="Buscar en Lineas"
+              label="Buscar Linea"
               background-color="white"
               single-line
               hide-details
@@ -15,13 +15,12 @@
               flat
             ></v-text-field>
             
-            <add class="px-3 mb-2" @click="updateTableMachine" />    
-        
+            <add class="px-3 mb-2" @click="updateTableMachine" />   
         </v-row>
         <v-data-table
           class="mb-3"
           :headers="headers"
-          :items="maquinas"
+          :items="lines"
           :search="search"
           :disable-sort="true"
           :server-items-length="totalDataMachine"
@@ -33,7 +32,7 @@
           </template>
 
           <template v-slot:[`item.eliminar`]="{ item }">
-            <delet :delete="item" />
+            <delete :delete="item" />
           </template>
         </v-data-table>
       </v-container>
@@ -42,28 +41,27 @@
 </template>
 
 <script>
-import edit from '@/components/common/editar';
-import add from '@/components/machine/add.vue';
-import delet from '@/components/common/eliminar';
+import Edit from '~/components/lineas/EditLine.vue';
+import Delete from "~/components/lineas/DeleteLine.vue";
+import Add from "~/components/lineas/AddLine.vue";
 
 export default {
   props:{
-    maquinas:{
+    lines:{
       type: Array,
       required:true
     },
     totalDataMachine:{
       type: Number,
-      required: true
     },
     cliente:{
       type:String
     }
   },
   components: {
-    edit,
-    add,
-    delet,
+    Add,
+    Edit,
+    Delete
   },
   data() {
     return {
@@ -89,9 +87,10 @@ export default {
   methods:{
     updateTableMachine(e){
       this.$emit('click', e)
-    },
+    }
   },
   mounted(){
+    this.lines.push({editar:"fdsfsd",name:"dfsdf"});
   }
 }
 </script>

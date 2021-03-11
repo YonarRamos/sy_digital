@@ -2,6 +2,7 @@
   <div>
     <v-text-field
       @click="dialog = true"
+      @keyup.enter="dialog = true"
       prepend-inner-icon="mdi-camera"
       readonly
       hide-details

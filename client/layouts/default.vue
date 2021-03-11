@@ -8,7 +8,7 @@
       app
       color="#f5f5f5"
     >
-
+{{user}}
 <v-list>
       <v-list-item to="/" color="error">
         <v-list-item-icon>
@@ -139,7 +139,7 @@
       <v-btn @click.stop="drawer = !drawer" dark icon><v-icon>list</v-icon></v-btn>
       
       <v-spacer />
-<span style="text-transform:uppercase;" class="white--text mr-2">{{username}}</span>
+<span style="text-transform:uppercase;" class="white--text mr-2">{{user ? user.username : "Error"}}</span>
 <v-menu bottom left>
         
         <template v-slot:activator="{ on, attrs }">
@@ -149,7 +149,7 @@
         </template>
 
        <v-list>
-          <v-list-item v-if="rol" class="menuUser pointer">
+          <v-list-item v-if="user.rol_id" class="menuUser pointer">
             <v-list-item-title  @click="toggleDialogPassword(true)">
               <v-icon left color="error" align="center" >lock</v-icon>
               Cambiar Contraseña
@@ -184,8 +184,6 @@ export default {
   },
   data() {
     return {
-      username: Cookies.get('username'),
-      rol: Cookies.get('rol'),
       clientes:[],
       opciones: [
         ['Equipos', 'dns','/opciones'],
@@ -234,14 +232,14 @@ export default {
     this.cargarOpcionesSidebar();
   },
   computed:{
-    ...mapState(["indexTab"])
+    ...mapState(["indexTab","user"])
   }
 }
 </script>
 
 <style scoped>
 .img {
-  top: 340px;
+  top: 400px;
   left: 25px;
   width: 200px;
   position: relative;

@@ -42,19 +42,21 @@
         <v-card flat>
           <equipos-table 
           v-if="i==1" 
-          :maquinas="maquinas"
+          :equipos="equipos"
           :cliente="clienteName"
           :totalDataMachine="totalDataMachine ? totalDataMachine : totalDataMachine = 10" 
           ref="equipos-table" 
-          @click="cargarDatosTablaMachine"/>
+          @click="cargarDatosTablaMachine"
+          />
 
-          <lineas-table 
+         <lines-table
           v-if="i==2" 
-          :maquinas="maquinas"
+          :lines="lineas"
           :cliente="clienteName"
           :totalDataMachine="totalDataMachine ? totalDataMachine : totalDataMachine = 10" 
           ref="equipos-table" 
-          @click="cargarDatosTablaMachine"/>
+          @click="cargarDatosTablaMachine"
+          />
 
           <machine-table 
           v-if="i==3" 
@@ -62,7 +64,8 @@
           :cliente="clienteName"
           :totalDataMachine="totalDataMachine ? totalDataMachine : totalDataMachine = 10" 
           ref="machine-table" 
-          @click="cargarDatosTablaMachine"/>
+          @click="cargarDatosTablaMachine"
+          />
 
           <users-table 
           v-if="i==4"
@@ -80,9 +83,9 @@
 
 <script>
 import Equipos_table from '~/components/equipos/equipos_table.vue';
-import Lineas_table from '~/components/lineas/lineas_table.vue';
 import Machine_table from "~/components/machine/machine_table.vue";
 import Users_table from '~/components/users/users_table.vue';
+import Lines_table from "~/components/lineas/Lines_table"
 import { mapState } from "vuex";
 import Cookies from "js-cookie";
 import axios from "@/plugins/axios";
@@ -94,7 +97,7 @@ import axios from "@/plugins/axios";
           Machine_table,
             Users_table,
             Equipos_table,
-            Lineas_table
+            Lines_table
       },
     data () {
       return {
@@ -104,6 +107,8 @@ import axios from "@/plugins/axios";
         page:null,
         perPage:null,
         maquinas:[],
+        equipos:[],
+        lineas:[],
         usuarios:[]
       }
     },
@@ -170,8 +175,8 @@ import axios from "@/plugins/axios";
                 }
               })
           .then((res)=>{
-            console.log('Users:', res.data.data.data);
-            this.usuarios = res.data.data.data;
+            console.log('Users:', res.data.data);
+            this.usuarios = res.data.data;
             this.totalDataUsers = this.usuarios.length;
           })
         } catch (error) {

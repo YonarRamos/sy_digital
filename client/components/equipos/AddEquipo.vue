@@ -18,12 +18,12 @@
                     color="error"
                     dark
                     >
-                      <strong>Agregar Máquina</strong>
+                      <strong>Agregar Equipo</strong>
                     </v-toolbar>
                     <v-card-text>
                         <v-form ref="form" v-model="valid" lazy-validation>
                             <v-text-field
-                            v-model="machine.name" 
+                            v-model="equipo.name" 
                             outlined
                             placeholder="Nombre"
                             color="error"
@@ -31,7 +31,7 @@
                             :rules="[rules.required]"
                             ></v-text-field>
                             <v-select
-                            v-model="machine.company_id"
+                            v-model="equipo.company_id"
                             :items="sec"
                             label="Empresa"
                             outlined
@@ -40,7 +40,7 @@
                             :rules="[rules.required]"
                             ></v-select>
                           <v-select
-                        v-model="machine.section_id"
+                        v-model="equipo.section_id"
                             :items="sec"
                             label="Sección"
                             outlined
@@ -49,7 +49,7 @@
                             :rules="[rules.required]"
                             ></v-select>
                         <v-textarea
-                        v-model="machine.description"
+                        v-model="equipo.description"
                             outlined
                             placeholder="Descripción"
                             color="error"
@@ -96,7 +96,7 @@ import Cookies from "js-cookie";
 export default {
     data(){
         return{
-          machine:
+          equipo:
           {
             name: "",
             section_id: "",

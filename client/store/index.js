@@ -31,9 +31,6 @@ export const mutations = {
   },
   async SET_USER(state, payload){
     state.user = payload
-    Cookies.set('username', payload.username);
-    Cookies.set('company', payload.company_id);
-    Cookies.set('rol', payload.rol_id);
   },
   async SET_AUTH_AUTOMATIC(state, res) {
     state.auth = true;
@@ -45,7 +42,7 @@ export const mutations = {
     Cookies.remove('username')
     Cookies.remove('company_id')
     Cookies.remove('rol_id')   
-    location.reload();
+    this.$router.push('/login')
   },
   toggleDialogPassword(state, payload){
     state.dialogPassword = payload
@@ -83,7 +80,8 @@ export const actions = {
              headers: { Authorization: `Bearer ${token}` }
            })
            .then(res => {
-             this.commit('SET_AUTH_AUTOMATIC', true );                    
+             this.commit('SET_AUTH_AUTOMATIC', true );
+             console.log('Automatic:', res);
            }).catch(err => {               
            })                
      }

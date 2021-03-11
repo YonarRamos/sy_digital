@@ -135,7 +135,7 @@ export default {
             iconCancel:false,
             loading:false,
             dialog:false,
-            empresas:['Systelec', 'Softys', 'Jhonson'],
+            empresas:[],
             companies: {
               'Systelec': 1, 
               'Softys': 2,
@@ -220,17 +220,14 @@ export default {
             this.dialog = false;
             this.$refs.form.reset();
         },
-        async obtenerCompanies(){
+        async getCompanies(){
           try {
-            let token = Cookies.get('token');
-
-            await axios('get',{
-              headers:{
-                Authorization: `Bearer ${token}`
-              }
+            await axios.get('companyName',{
             })
-            ,then((res)=>{
-              console.res();
+            .then((res)=>{
+              for (const item of res.data.data) {
+                this.empresas.push(item.name);
+              }
             })
           } catch (error) {
             console.log(error);
@@ -238,7 +235,7 @@ export default {
         }
     },
     mounted(){
-      /* this.obtenerCompanies(); */
+      this.getCompanies();
     }
 }
 </script>

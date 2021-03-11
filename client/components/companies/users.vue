@@ -1,14 +1,14 @@
 <template>
-  <v-container>
-    <v-card color="#EBEDEF" >
-      <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div> 
-      <v-container class="pt-0">
+  <v-container style="background:#F5F6F8;box-shadow: inset 0 0 20px #EBEDEF;">
+<!--     <v-card color="#EBEDEF" >
+      <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div>  -->
+      <v-container class="pt-0" color="#C1C6CC">
         <v-row class="ml-0">
 
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="Buscar en Maquinas"
+              label="Buscar Usuario"
               background-color="white"
               single-line
               hide-details
@@ -21,6 +21,7 @@
         </v-row>
 
         <v-data-table
+          style="background:#F9F9F9"
           class="mb-3"
           :headers="headers"
           :items="usuarios"
@@ -38,18 +39,18 @@
           </template>
 
           <template v-slot:[`item.eliminar`]="{ item }">
-            <delet :delete="item" />
+            <delete :delete="item" />
           </template>
         </v-data-table>
       </v-container>
-    </v-card>
+   <!--  </v-card> -->
   </v-container>
 </template>
 
 <script>
-import add from '@/components/users/add';
-import edit from '@/components/common/editar';
-import delet from '@/components/common/eliminar';
+import Add from '~/components/users/AddUser';
+import Edit from '~/components/users/EditUser';
+import Delete from '~/components/users/DeleteUser';
 
 export default {
   props:{
@@ -66,9 +67,9 @@ export default {
     }
   },
   components: {
-    edit,
-    add,
-    delet,
+    Add,
+    Edit,
+    Delete
   },
   data() {
     return {
@@ -110,7 +111,7 @@ export default {
 <style scoped>
   .cliente{
     font-weight:bold;
-    color: rgb(193, 198, 204);
+    color: #EBEDEF;
     font-family:Roboto, sans-serif;
     font-size: 15px;
     padding-top: 2px;

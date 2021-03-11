@@ -46,7 +46,7 @@
             </template>
 
             <template v-slot:[`item.eliminar`]="{ item }">
-              <delet :delete="item" />
+              <delete :delete="item" />
             </template>
 
         </v-data-table>
@@ -59,15 +59,14 @@
 import Cookies from "js-cookie";
 import axios from '@/plugins/axios';
 
-import edit from '@/components/common/editar';
-import Add from "~/components/companies/add.vue";
-import delet from '@/components/common/eliminar';
+import Add from "~/components/companies/AddCompany.vue";
+import Delete from "~/components/companies/DeleteCompany.vue";
 import machine from "~/components/companies/machine";
 import users from "~/components/companies/users";
 
 export default {
   props:{
-/*     maquinas:{
+    maquinas:{
       type: Array,
       required:true
     },
@@ -77,14 +76,13 @@ export default {
     },
     cliente:{
       type:String
-    } */
+    }
   },
   components: {
-    edit,
     Add,
-    delet,
     machine,
-    users
+    users,
+    Delete
   },
   data() {
     return {
@@ -189,8 +187,8 @@ export default {
                 }
               })
           .then((res)=>{
-            console.log('Users:', res.data.data.data);
-            this.usuarios = res.data.data.data;
+            console.log('Users:', res.data.data);
+            this.usuarios = res.data.data;
             this.totalDataUsers = this.usuarios.length;
           })
         } catch (error) {
@@ -200,6 +198,7 @@ export default {
   },
   mounted(){
       this.getCompanies();
+      this.companies.push({name:"Prueba"})
   }
 }
 </script>

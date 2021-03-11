@@ -17,11 +17,12 @@ class CompanyController {
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      let company = await Company.query().with('machine').paginate(page , perPage);
+      let company = await Company.query().paginate(page , perPage);
       company = company.toJSON();
      
       response.status(200).json({message: 'Listado de Company', data : company})
     } catch (error) {
+      console.log(error);
       if (error.name == 'InvalidJwtToken') {
         return response.status(400).json({ menssage: 'Usuario no Valido' })
       }
