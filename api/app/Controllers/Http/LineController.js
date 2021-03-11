@@ -3,6 +3,8 @@
 const Response = use('App/Models/Response');
 const { validate } = use('Validator');
 const Line = use("App/Models/Line");
+const Company = use("App/Models/Company");
+const Database = use('Database')
 class LineController {
  
   async index ({ request, response, auth }) {
@@ -16,7 +18,7 @@ class LineController {
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      const linea = await Line.query().paginate(page, perPage);
+      const linea = await Line.query().with('machine').paginate(page, perPage);
       response.status(200).json({ message: 'Listado de Linea', data: linea })
     } catch (error) {
       if (error.name == 'InvalidJwtToken') {
@@ -30,24 +32,35 @@ class LineController {
   async store ({ request, response , auth }) {
     try {
       const user = await auth.getUser();
-      let { description, name,  company_id } = request.all();
+      let { description, name  , company_id} = request.all();
       const rules = {
         name: 'required',
         company_id : 'required'
       }
-      let validation = await validate({ name, company_id }, rules);
+      
+      let validation = await validate({ name,  company_id }, rules);
       if (validation.fails()) {
         return response.status(404).json({ message: "Datos Insufiente" });
       }
-      if (user.id == 1) {
+      if (user.rol_id == 1) {
         const line = await Line.create({
           name,
           description,
-          company_id
+          company_id 
         })
-       // const TableMachineCompany = await Database.from('company_machine').insert([{company_id: company_id , machine_id: machine.id , line_id: line_id}]) 
+        /*var arrpromises = company.map(item => {
+          return {
+            name: item.name,
+            description: item.description,
+            line_id: line.id,
+            machine_id : line.machine_id
+          }
+        })
+        const resp = await Promise.all(arrpromises)
+        Company.query().insert(resp);*/
+        //const TablePivotLIne = await Database.from('company_line').insert([{company_id: company_id , line_id: line.id}]) 
 
-        return response.status(200).json({ message: "Maquina creado con exito!", data: line})
+        return response.status(200).json({ message: "Linea creado con exito!", data: line})
         
       } else {
         return response.status(400).json({ menssage: "Usuario sin permiso suficiente para realizar esta operacion!" })

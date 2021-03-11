@@ -22,9 +22,7 @@ class Machine extends Model {
         return value.format('YYYY-MM-DD HH:mm:ss')
       }
     }
-    company () {
-        return this.belongsTo('App/Models/Company', 'company_id')
-      }
+   
       section () {
         return this.belongsTo('App/Models/Section', 'section_id')
       }
