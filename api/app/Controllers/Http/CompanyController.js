@@ -4,28 +4,55 @@ const Response = use('App/Models/Response');
 const { validate } = use('Validator');
 const Company = use("App/Models/Company");
 var moment = require('moment');
+const Database = use('Database')
 class CompanyController {
-  
-  async index ({ request, response, auth }) {
+
+  async index({ request, response, auth }) {
     try {
       const user = await auth.getUser();
       var query = Company.query();
-      var{
-        page , 
+      var {
+        page,
         perPage,
-      }= request.all();
+      } = request.all();
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      let company = await Company.query().with('machine').paginate(page , perPage);
+      let company = await Company.query().with('Line').with('usuario').with('usuario.rols').with('Line.machine').paginate(page, perPage);
       company = company.toJSON();
-     
-      response.status(200).json({message: 'Listado de Company', data : company})
+      var arrPromisesCompany = company.data.map(it => {
+        return {
+          'company': {
+            "id": it.id,
+            "name": it.name,
+            "description": it.description,
+          }, 'Linea': it.Line.map(p => {
+           //console.log(p)
+            return {
+              "line_id": p.id,
+              "name_linea": p.name,
+              "description_linea": p.description,
+              "machine": p.machine
+            }
+          }),
+          'user': it.usuario.map(e=>{
+            return{
+              "username": e.username,
+              "email": e.email,
+              "rol": e.rols.name
+            }
+          })
+        }
+        })
+      let resp = await Promise.all(arrPromisesCompany)
+      company.data = resp
+      response.status(200).json({ message: 'Listado de Company', data: company })
     } catch (error) {
+      console.log(error)
       if (error.name == 'InvalidJwtToken') {
         return response.status(400).json({ menssage: 'Usuario no Valido' })
       }
-      return response.status(400).json({  menssage: 'Hubo un error al realizar la operación', error  })
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
     }
   }
 
@@ -38,7 +65,7 @@ class CompanyController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create ({ request, response, view }) {
+  async create({ request, response, view }) {
   }
 
   /**
@@ -49,65 +76,100 @@ class CompanyController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response , auth }) {
+  async store({ request, response, auth }) {
     try {
-      const user =  await auth.getUser(); 
-      let{ name , description}= request.all()
+      const user = await auth.getUser();
+      let { name, description } = request.all()
       const rules = {
         name: 'required',
       }
-      
+
       let validation = await validate({ name }, rules);
-      if(validation.fails()){
-       return response.status(404).json({message: "Datos Insufiente"});
+      if (validation.fails()) {
+        return response.status(404).json({ message: "Datos Insufiente" });
       }
-      if(user.id == 1){
+      if (user.id == 1) {
         const company = await Company.create({
-          name, 
+          name,
           description
         })
-        return response.status(200).json({message: 'Empresa Cargada con exito!' , data: company})
+        return response.status(200).json({ message: 'Empresa Cargada con exito!', data: company })
       }
     } catch (error) {
-      
+
     }
   }
 
   async show({ params, request, response, auth }) {
-    try {
-      const user = await auth.getUser()
+   try {
       var id = params.id
-      let company = await Company.query().with('machine').where('id', id).fetch();
-      return response.status(200).json({ menssage: 'Company', data: company });
+      const user = await auth.getUser();
+      var query = Company.query();
+      var {
+        page,
+        perPage,
+      } = request.all();
+      //seteo valores por defectos
+      page = page || 1
+      perPage = perPage || 10
+      let company = await Company.query().with('Line').with('usuario').with('usuario.rols').with('Line.machine').where('id', id).paginate(page, perPage);
+      company = company.toJSON();
+      var arrPromisesCompany = company.data.map(it => {
+        return {
+          'company': {
+            "id": it.id,
+            "name": it.name,
+            "description": it.description,
+          }, 'Linea': it.Line.map(p => {
+           //console.log(p)
+            return {
+              "line_id": p.id,
+              "name_linea": p.name,
+              "description_linea": p.description,
+              "machine": p.machine
+            }
+          }),
+          'user': it.usuario.map(e=>{
+            return{
+              "username": e.username,
+              "email": e.email,
+              "rol": e.rols.name
+            }
+          })
+        }
+        })
+      let resp = await Promise.all(arrPromisesCompany)
+      company.data = resp
+      response.status(200).json({ message: 'Listado de Company', data: company })
     } catch (error) {
       console.log(error)
       if (error.name == 'InvalidJwtToken') {
         return response.status(400).json({ menssage: 'Usuario no Valido' })
       }
       return response.status(400).json({
-        menssage: 'Grupo no encontrado',
+        menssage: 'Company no encontrado',
         id
       })
     }
   }
 
-  async CompanyName ({ params, request, response,}) {
+  async CompanyName({ params, request, response, }) {
     try {
       var query = Company.query();
       let company = await Company.query().fetch();
       company = company.toJSON();
       console.log(company)
-      let ArraPromises = company.map(it =>{
-        return{
+      let ArraPromises = company.map(it => {
+        return {
           "id": it.id,
           "name": it.name
         }
       })
       const resp = await Promise.all(ArraPromises);
-      return response.status(200).json({menssage: 'Company', data: resp})
+      return response.status(200).json({ menssage: 'Company', data: resp })
     } catch (error) {
       console.log(error)
-      return response.status(400).json({  menssage: 'Hubo un error al realizar la operación', error  }) 
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
     }
   }
 
@@ -119,7 +181,7 @@ class CompanyController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response }) {
   }
 
   /**
@@ -130,7 +192,7 @@ class CompanyController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, request, response }) {
   }
 }
 

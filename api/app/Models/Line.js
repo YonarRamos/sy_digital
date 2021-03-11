@@ -13,6 +13,10 @@ class Line extends Model {
     static get updatedAtColumn() {
         return null;
     }
+    machine(){
+        return this.hasMany('App/Models/Machine', 'id', "line_id") 
+    }
+
 }
 
 module.exports = Line

@@ -68,31 +68,28 @@ class MachineController {
   async store({ request, response, auth }) {
     try {
       const user = await auth.getUser();
-      let { name, section_id, description, company_id , line_id} = request.all();
+      let { name, sector_id, description , line_id} = request.all();
       const rules = {
         name: 'required',
-        section_id: 'required',
-        description: 'required',
-        company_id: 'required'
+        sector_id: 'required',
+        line_id : 'required'
       }
 
-      let validation = await validate({ name, section_id, description, company_id }, rules);
+      let validation = await validate({ name, sector_id , line_id }, rules);
       if (validation.fails()) {
         return response.status(404).json({ message: "Datos Insufiente" });
       }
      
-      if (user.id == 1) {
+      if (user.rol_id == 1) {
         const machine = await Machine.create({
           name,
-          section_id,
+          sector_id,
           description,
-          status_machine_id: 1,
-          last_update: moment().format('YYYY-MM-DD HH:mm:ss'),
-          company_id,
           line_id,
-          user_id: user.id
+          status_machine_id: 1,
+          last_update: moment().format('YYYY-MM-DD HH:mm:ss')
         })
-        const TableMachineCompany = await Database.from('company_machine').insert([{company_id: company_id , machine_id: machine.id , line_id: line_id}]) 
+       // const TableMachineCompany = await Database.from('company_line').insert([{company_id: company_id , line_id: line_id}]) 
 
         return response.status(200).json({ message: "Maquina creado con exito!", data: machine})
         

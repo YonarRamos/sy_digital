@@ -46,9 +46,6 @@ static get updatedAtColumn() {
   rols () {
     return this.belongsTo('App/Models/Rol' , 'rol_id')
   }
-  company () {
-    return this.belongsTo('App/Models/Company' , 'company_id')
-  }
 }
 
 module.exports = User
