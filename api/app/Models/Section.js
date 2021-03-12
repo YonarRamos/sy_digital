@@ -4,6 +4,9 @@
 const Model = use('Model')
 
 class Section extends Model {
+    static get table () {
+        return 'sector';
+      }
 }
 
 module.exports = Section

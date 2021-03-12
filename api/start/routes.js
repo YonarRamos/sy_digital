@@ -44,3 +44,7 @@ Route.get("api/v1/company" ,  "CompanyController.index");
 Route.get("api/v1/companyName" ,  "CompanyController.CompanyName");
 Route.get("api/v1/company/:id" ,  "CompanyController.show");
 Route.post("api/v1/company" ,  "CompanyController.store");
+
+
+//prueba de mail
+Route.post("api/v1/email" ,  "MailController.index");
