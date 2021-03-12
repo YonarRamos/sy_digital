@@ -1,23 +1,48 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
-/**
- * Resourceful controller for interacting with statusmachines
- */
+const User = use("App/Models/User");
+const StatusMachine = use("App/Models/StatusMachine");
+const Company = use("App/Models/Company");
+const Query = require("../../Utils/Query");
 class StatusMachineController {
-  /**
-   * Show a list of all statusmachines.
-   * GET statusmachines
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+ 
+  async index ({ request, response, auth}) {
+    try {
+      const user = await auth.getUser();
+      var query = StatusMachine.query();
+      var{
+        page , 
+        perPage,
+      }= request.all();
+      //seteo valores por defectos
+      page = page || 1
+      perPage = perPage || 10
+      
+      let status = await StatusMachine.query().paginate(page , perPage)
+      status = status.toJSON();
+      /*  console.log(users)
+      var arrPromises =  users.data.map(item=>{
+        return{
+          "id": item.id,
+        "username": item.username,
+        "email": item.email,
+        "company_id": item.company.id, 
+        "company_name": item.company.name,
+        "rol": item.rols.rol,
+        }
+      })
+      let resp = await Promise.all(arrPromises)
+      //console.log(users.data)
+      users.data = resp*/
+       response.status(200).json({message: 'Listado de Estados de Maquinas', data : status})
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({  menssage: 'Hubo un error al realizar la operación', error  })
+    }
+  
   }
 
   /**

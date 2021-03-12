@@ -33,10 +33,9 @@ Route.post("api/v1/line" ,  "LineController.store");
 Route.get("api/v1/line", "LineController.index");
 
 //Maquinas
-
 Route.get("api/v1/machine" ,  "MachineController.index");
 Route.post("api/v1/machine" ,  "MachineController.store");
-
+Route.get("api/v1/statusMachine" ,  "StatusMachineController.index");
 
 
 //Company
