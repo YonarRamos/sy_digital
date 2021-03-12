@@ -23,8 +23,8 @@ class Machine extends Model {
       }
     }
    
-      section () {
-        return this.belongsTo('App/Models/Section', 'section_id')
+    sector () {
+        return this.belongsTo('App/Models/Section', 'sector_id')
       }
       statusMachine () {
         return this.belongsTo('App/Models/StatusMachine', 'status_machine_id')

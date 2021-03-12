@@ -38,6 +38,7 @@ class MachineController {
       machine.data = resp
       response.status(200).json({ message: 'Listado de Maquina', data: machine })
     } catch (error) {
+      console.log(error)
       if (error.name == 'InvalidJwtToken') {
         return response.status(400).json({ menssage: 'Usuario no Valido' })
       }

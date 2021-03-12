@@ -124,8 +124,10 @@ class UserController {
   async loginToken({ auth, response }) {
     try {
       const user = await auth.getUser();
+     
       if (user) {
         let data = { email: user.email, password: user.password }
+        data = user
         return response.status(200).json(data)
       }
     } catch (error) {
