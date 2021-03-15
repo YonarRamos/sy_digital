@@ -117,7 +117,14 @@ class CompanyController {
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      let company = await Company.query().with('Line').with('usuario').with('usuario.rols').with('Line.machine').where('id', id).paginate(page, perPage);
+      let company = await Company.query()
+      .with('Line')
+      .with('usuario')
+      .with('usuario.rols')
+      .with('Line.machine')
+      .with('Line.machine.sector')
+      .with('Line.machine.statusMachine')
+      .where('id', id).paginate(page, perPage);
       company = company.toJSON();
       var arrPromisesCompany = company.data.map(it => {
         return {
