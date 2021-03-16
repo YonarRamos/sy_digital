@@ -54,7 +54,34 @@ class SectionController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store ({ request, response , auth}) {
+    try {
+      const user = await auth.getUser();
+      let { name, description, company_id } = request.all();
+      const rules = {
+        name: 'required',
+        company_id: 'required'
+      }
+
+      let validation = await validate({ name ,company_id}, rules);
+      if (validation.fails()) {
+        return response.status(404).json({ message: "Datos Insufiente" });
+      }
+      if(user.rol_id == 1){
+        const sector = await Section.create({
+          name,
+          description,
+          company_id
+        })
+        return response.status(200).json({ message: 'Sector Cargada con exito!', data: sector })
+      }
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
+    }
   }
 
   

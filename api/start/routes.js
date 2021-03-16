@@ -43,8 +43,11 @@ Route.get("api/v1/company" ,  "CompanyController.index");
 Route.get("api/v1/companyName" ,  "CompanyController.CompanyName");
 Route.get("api/v1/company/:id" ,  "CompanyController.show");
 Route.post("api/v1/company" ,  "CompanyController.store");
+Route.put("api/v1/company/:id" ,  "CompanyController.update");
+Route.delete("api/v1/company/:id" ,  "CompanyController.destroy");
 
 //sector
+Route.post("api/v1/sector" ,  "SectionController.store");
 Route.get("api/v1/sector/:id" ,  "SectionController.show"); //params id es el id de la company
 
 //prueba de mail

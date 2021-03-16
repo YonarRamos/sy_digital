@@ -7,6 +7,12 @@ class Section extends Model {
     static get table () {
         return 'sector';
       }
+      static get createdAtColumn() {
+        return null;
+    }
+    static get updatedAtColumn() {
+        return null;
+    }
 }
 
 module.exports = Section

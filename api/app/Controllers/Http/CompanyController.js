@@ -19,11 +19,11 @@ class CompanyController {
       page = page || 1
       perPage = perPage || 10
       let company = await Company.query().with('Line')
-      .with('usuario')
-      .with('usuario.rols')
-      .with('Line.machine')
-      .with('Line.machine.sector')
-      .with('Line.machine.statusMachine').paginate(page, perPage);
+        .with('usuario')
+        .with('usuario.rols')
+        .with('Line.machine')
+        .with('Line.machine.sector')
+        .with('Line.machine.statusMachine').paginate(page, perPage);
       company = company.toJSON();
       var arrPromisesCompany = company.data.map(it => {
         return {
@@ -32,23 +32,23 @@ class CompanyController {
             "name": it.name,
             "description": it.description,
           }, 'Linea': it.Line.map(p => {
-           //console.log(p)
+            //console.log(p)
             return {
               "line_id": p.id,
               "name_linea": p.name,
               "description_linea": p.description,
-              "machine":p.machine
-            } 
+              "machine": p.machine
+            }
           }),
-          'user': it.usuario.map(e=>{
-            return{
+          'user': it.usuario.map(e => {
+            return {
               "username": e.username,
               "email": e.email,
               "rol": e.rols.name
             }
           })
         }
-        })
+      })
       let resp = await Promise.all(arrPromisesCompany)
       company.data = resp
       response.status(200).json({ message: 'Listado de Company', data: company })
@@ -106,7 +106,7 @@ class CompanyController {
   }
 
   async show({ params, request, response, auth }) {
-   try {
+    try {
       var id = params.id
       const user = await auth.getUser();
       var query = Company.query();
@@ -118,13 +118,13 @@ class CompanyController {
       page = page || 1
       perPage = perPage || 10
       let company = await Company.query()
-      .with('Line')
-      .with('usuario')
-      .with('usuario.rols')
-      .with('Line.machine')
-      .with('Line.machine.sector')
-      .with('Line.machine.statusMachine')
-      .where('id', id).paginate(page, perPage);
+        .with('Line')
+        .with('usuario')
+        .with('usuario.rols')
+        .with('Line.machine')
+        .with('Line.machine.sector')
+        .with('Line.machine.statusMachine')
+        .where('id', id).paginate(page, perPage);
       company = company.toJSON();
       var arrPromisesCompany = company.data.map(it => {
         return {
@@ -133,7 +133,7 @@ class CompanyController {
             "name": it.name,
             "description": it.description,
           }, 'Linea': it.Line.map(p => {
-           //console.log(p)
+            //console.log(p)
             return {
               "line_id": p.id,
               "name_linea": p.name,
@@ -141,15 +141,15 @@ class CompanyController {
               "machine": p.machine
             }
           }),
-          'user': it.usuario.map(e=>{
-            return{
+          'user': it.usuario.map(e => {
+            return {
               "username": e.username,
               "email": e.email,
               "rol": e.rols.name
             }
           })
         }
-        })
+      })
       let resp = await Promise.all(arrPromisesCompany)
       company.data = resp
       response.status(200).json({ message: 'Listado de Company', data: company })
@@ -170,7 +170,7 @@ class CompanyController {
       var query = Company.query();
       let company = await Company.query().fetch();
       company = company.toJSON();
-      console.log(company)
+      //console.log(company)
       let ArraPromises = company.map(it => {
         return {
           "id": it.id,
@@ -186,15 +186,27 @@ class CompanyController {
     }
   }
 
-  /**
-   * Update company details.
-   * PUT or PATCH companies/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update({ params, request, response }) {
+  async update({ request, response, params: { id } }) {
+    try {
+      const user = await auth.getUser();
+      const data = request.only(["name", "description"])
+      if (user.rol_id == 1) {
+        const edit = await Company.find(id);
+        edit.name = data.name || edit.name;
+        edit.description = data.description || edit.description;
+        await edit.save();
+        response.status(200).json({message: 'Company modificada con exito!', data: edit})
+      }
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({
+        menssage: 'Company no encontrado',
+        id
+      })
+    }
   }
 
   /**
@@ -205,7 +217,24 @@ class CompanyController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy({ params, request, response }) {
+  async destroy({ params: { id }, request, response, auth }) {
+    try {
+      const user = await auth.getUser();
+      if(user.rol_id == 1){
+        const company = await Company.findOrFail(id);
+        await company.delete();
+        return response.status(200).json({message: 'Company Eliminada con exito!'})
+      }
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({
+        menssage: 'Company no encontrado',
+        id
+      })
+    }
   }
 }
 
