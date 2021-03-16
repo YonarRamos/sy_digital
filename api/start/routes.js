@@ -30,7 +30,7 @@ Route.get("api/v1/loginUsersAutomatico", "UserController.loginToken");
 
 //lineas
 Route.post("api/v1/line" ,  "LineController.store");
-Route.get("api/v1/line", "LineController.index");
+Route.get("api/v1/line/:id", "LineController.indexFox"); //params id es el id de la company
 
 //Maquinas
 Route.get("api/v1/machine" ,  "MachineController.index");
@@ -44,6 +44,8 @@ Route.get("api/v1/companyName" ,  "CompanyController.CompanyName");
 Route.get("api/v1/company/:id" ,  "CompanyController.show");
 Route.post("api/v1/company" ,  "CompanyController.store");
 
+//sector
+Route.get("api/v1/sector/:id" ,  "SectionController.show"); //params id es el id de la company
 
 //prueba de mail
 Route.post("api/v1/email" ,  "MailController.index");

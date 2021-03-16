@@ -20,7 +20,9 @@ create table sector(
     id smallserial NOT NULL,
     description varchar(250), 
     name varchar(30) NOT NULL , 
-    PRIMARY KEY (id)
+    company_id smallint NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY(company_id) REFERENCES company (id)
 );
 /* base de datos compañia*/
 create table company(

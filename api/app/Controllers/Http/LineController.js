@@ -27,6 +27,29 @@ class LineController {
       return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
     }  
   }
+  async indexFox ({ request, response, auth , params}) {
+    try {
+      var company_id = params.id
+      const user = await auth.getUser();
+      let linea = await Line.query().where('company_id' , company_id).fetch();
+      linea = linea.toJSON();
+     var arrLinea = linea.map(e=>{
+        return{
+          "id": e.id,
+          "name": e.name,
+          "company_id": e.company_id
+        }
+      })
+      let resp = await Promise.all(arrLinea)
+      response.status(200).json({ message: 'Listado de Linea', data: resp })
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
+    }  
+  }
 
   
   async store ({ request, response , auth }) {
@@ -73,7 +96,29 @@ class LineController {
   }
 
   
-  async show ({ params, request, response, view }) {
+  async show ({ params, request, response, auth }) {
+    try {
+      var company_id = params.id
+      const user = await auth.getUser();
+      let line = await Line.query().where('company_id', company_id).fetch();
+      line = line.toJSON();
+      var arrLineCompany = line.map(e=>{
+        return{
+          "id": e.id,
+          "name": e.name,
+          "company_id": e.company_id
+        }
+      })
+      let resp = await Promise.all(arrLineCompany)
+      line = resp
+      response.status(200).json({ message: 'Listado de Linea', data: line })
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
+    }
   }
 
   /**
