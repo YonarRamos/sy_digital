@@ -9,8 +9,9 @@ var moment = require('moment');
 const Database = use("Database");
 class MachineController {
 
-  async index({ request, response, auth }) {
+  async index({ request, response, auth , params}) {
     try {
+      var company_id = params.id
       const user = await auth.getUser();
       var query = Machine.query();
       var {
@@ -20,22 +21,9 @@ class MachineController {
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      let machine = await Machine.query().with('company').with('section').with('statusMachine').with('users').paginate(page, perPage);
-      machine = machine.toJSON();
+      let machine = await Machine.query().where('company_id' , company_id).paginate(page, perPage);
+     // machine = machine.toJSON();
       
-      var arrPromiseMachine = machine.data.map(item => {
-        return {
-          "name": item.name,
-          "section_id": item.section.name,
-          "description": item.description,
-          "status_machine_id": item.statusMachine.status,
-          "last_update": item.last_update,
-          "user_id": item.users.username,
-          "company_id": item.company.name,
-        }
-      })
-      let resp = await Promise.all(arrPromiseMachine)
-      machine.data = resp
       response.status(200).json({ message: 'Listado de Maquina', data: machine })
     } catch (error) {
       console.log(error)
@@ -69,14 +57,14 @@ class MachineController {
   async store({ request, response, auth }) {
     try {
       const user = await auth.getUser();
-      let { name, sector_id, description , line_id} = request.all();
+      let { name, sector_id, description , line_id , company_id} = request.all();
       const rules = {
         name: 'required',
         sector_id: 'required',
         line_id : 'required'
       }
 
-      let validation = await validate({ name, sector_id , line_id }, rules);
+      let validation = await validate({ name, sector_id , line_id , company_id }, rules);
       if (validation.fails()) {
         return response.status(404).json({ message: "Datos Insufiente" });
       }
@@ -87,6 +75,7 @@ class MachineController {
           sector_id,
           description,
           line_id,
+          company_id,
           status_machine_id: 1,
           last_update: moment().format('YYYY-MM-DD HH:mm:ss')
         })

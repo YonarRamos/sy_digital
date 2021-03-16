@@ -23,7 +23,7 @@ Route.get('/api/v1', () => {
 //users
 Route.post("api/v1/register" ,  "UserController.store");
 Route.post("api/v1/login", "UserController.login");
-Route.get("api/v1/user", "UserController.index");
+Route.get("api/v1/user/:id", "UserController.index"); //busco usuario por compañia
 Route.get("api/v1/user/:id", "UserController.show");
 Route.get("api/v1/loginUsersAutomatico", "UserController.loginToken");
 
@@ -33,7 +33,7 @@ Route.post("api/v1/line" ,  "LineController.store");
 Route.get("api/v1/line/:id", "LineController.indexFox"); //params id es el id de la company
 
 //Maquinas
-Route.get("api/v1/machine" ,  "MachineController.index");
+Route.get("api/v1/machine/:id" ,  "MachineController.index"); //busco maquina por compañia
 Route.post("api/v1/machine" ,  "MachineController.store");
 Route.get("api/v1/statusMachine" ,  "StatusMachineController.index");
 

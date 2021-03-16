@@ -10,8 +10,9 @@ const { validate } = use('Validator');
 
 class UserController {
  
-  async index ({ request, response, view, auth }) {
+  async index ({ request, response, params, auth }) {
     try {
+      var company_id = params.id
       const user = await auth.getUser();
       var query = User.query();
       var{
@@ -22,22 +23,19 @@ class UserController {
       page = page || 1
       perPage = perPage || 10
       
-      let users = await User.query().with('company').with('rols').paginate(page , perPage)
+      let users = await User.query().where('company_id' , company_id).paginate(page , perPage)
         users = users.toJSON();
-        console.log(users)
-      var arrPromises =  users.data.map(item=>{
-        return{
-          "id": item.id,
-        "username": item.username,
-        "email": item.email,
-        "company_id": item.company.id, 
-        "company_name": item.company.name,
-        "rol": item.rols.rol,
-        }
-      })
-      let resp = await Promise.all(arrPromises)
-      //console.log(users.data)
-      users.data = resp
+       // console.log(users)
+        var arrayUser = users.data.map(e=>{
+          return{
+            "id": e.id,
+            "name": e.username,
+            "email": e.email,
+            "rol": e.rol_id
+          }
+        })
+        let resp = await Promise.all(arrayUser)
+        users.data = resp
        response.status(200).json({message: 'Listado de Usuario', data : users})
     } catch (error) {
       console.log(error)
