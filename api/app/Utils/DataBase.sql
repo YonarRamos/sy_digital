@@ -49,10 +49,12 @@ create table machine(
     description varchar(250),
     line_id smallint NOT NULL,
     status_machine_id smallint NOT NULL,
+    company_id smallint NOT NULL,
     last_update timestamp,
     PRIMARY KEY (id),
     FOREIGN KEY (sector_id) REFERENCES sector (id),
     FOREIGN KEY (line_id) REFERENCES line (id),
+    FOREIGN KEY (company_id) REFERENCES company (id),
     FOREIGN KEY (status_machine_id) REFERENCES status_machine (id),
 );
 

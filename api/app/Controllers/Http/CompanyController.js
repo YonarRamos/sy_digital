@@ -18,7 +18,9 @@ class CompanyController {
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      let company = await Company.query().with('Line')
+      let company = await Company.query().with('Line', (builder) =>{
+       builder.paginate(page , perPage)
+      })
         .with('usuario')
         .with('usuario.rols')
         .with('Line.machine')

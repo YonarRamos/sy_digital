@@ -26,6 +26,9 @@ class Machine extends Model {
     sector () {
         return this.belongsTo('App/Models/Section', 'sector_id')
       }
+      line () {
+        return this.hasMany('App/Models/Line', 'line_id' , 'id')
+      }
       statusMachine () {
         return this.belongsTo('App/Models/StatusMachine', 'status_machine_id')
       }
