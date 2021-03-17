@@ -21,9 +21,21 @@ class MachineController {
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      let machine = await Machine.query().where('company_id' , company_id).paginate(page, perPage);
-     // machine = machine.toJSON();
-      
+      let machine = await Machine.query().with('sector').with('statusMachine').with('line').where('company_id' , company_id).paginate(page, perPage);
+      machine = machine.toJSON();
+     var arraMachine = machine.data.map(e=>{
+       return{
+         "id": e.id,
+         "name": e.name,
+         "sector": e.sector.name,
+         "description": e.description,
+         "line": e.line.name,
+         "status_machine": e.statusMachine.status,
+         "last_update": e.last_update
+       }
+     }) 
+     let resp = await Promise.all(arraMachine)
+     machine.data = resp
       response.status(200).json({ message: 'Listado de Maquina', data: machine })
     } catch (error) {
       console.log(error)
