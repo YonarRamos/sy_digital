@@ -37,6 +37,7 @@ class LineController {
         return{
           "id": e.id,
           "name": e.name,
+          "description": e.description,
           "company_id": e.company_id
         }
       })
