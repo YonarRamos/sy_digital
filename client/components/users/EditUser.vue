@@ -1,9 +1,8 @@
 <template>
-<div>
   <div>
-      <v-icon color="gray" @click="dialog=true">mdi-pencil</v-icon>
-  </div>
-  <v-row>
+        <div>
+            <v-icon @click="dialog=true" >mdi-pencil</v-icon>
+        </div>
         <v-col cols="auto" v-if="dialog">
             <v-dialog
                 transition="dialog-bottom-transition"
@@ -16,174 +15,228 @@
                     color="error"
                     dark
                     >
-                      <strong>Editar Equipo</strong>
+                        <strong>Nuevo Usuario</strong>
+                        <v-spacer></v-spacer>
+                        <img src="SYDIGITAL_white2.png" alt="logo" style="width:200px;">
                     </v-toolbar>
                     <v-card-text>
                         <v-form ref="form" v-model="valid" lazy-validation>
-                          <v-text-field
-                          v-model="line.name" 
-                          outlined
-                          placeholder="Nombre"
-                          color="error"
-                          class="mt-5"
-                          :rules="[rules.required]"
-                          ></v-text-field>
 
-<!--                           <v-row>
-                            <v-col>
-                              <v-select
-                                :items="maquinas_disponibles"
+                            <v-text-field
+                              v-model="user.username" 
+                              outlined
+                              placeholder="Nombre de Usuario"
+                              color="error"
+                              class="mt-5"
+                              :rules="[rules.required]"
+                            ></v-text-field>
+
+                            <v-text-field
+                              v-model="user.email"
+                              outlined
+                              placeholder="Email"
+                              color="error"
+                              class="mt-3"
+                              :rules="[rules.required, rules.email]"
+                            ></v-text-field>
+
+                              <v-autocomplete
+                              v-model="user.company_id"
+                                :items="empresas"
+                                item-text="name"
+                                return-object
                                 :menu-props="{ maxHeight: '400' }"
-                                label="Máquina"
-                                multiple
-                                placeholder="Asociar máquinas"
-                                persistent-hint
+                                placeholder="Asociar a la siguiente empresa"
+                                label="Compañia"
                                 outlined
-                                class="mt-5 mx-0"
+                                hide-details
+                                class="mt-3"
                                 color="error"
                                 :rules="[rules.required]"
-                              ></v-select>
-                            </v-col>
+                              ></v-autocomplete>
 
-                            <v-col cols="2" class="d-flex align-center">
-                              <v-btn class="mb-3" text color="primary" @click="mostrar_add_machine">Asociar Línea<v-icon>mdi-plus</v-icon> </v-btn>
-                            </v-col>
-                            <add-machine ref="addMachine"/>
-                            </v-row> -->
-                            
-                          <v-textarea
-                          v-model="line.description"
-                          outlined
-                          placeholder="Descripción"
-                          color="error"
-                          :rules="[rules.required]"
-                          ></v-textarea>
+                            <v-autocomplete
+                              v-model="user.rol_id"
+                              :items="roles"
+                              item-text="rol"
+                              return-object
+                              label="Rol"
+                              outlined
+                              class="mt-3"
+                              color="error"
+                              :rules="[rules.required]"
+                            ></v-autocomplete>
+
+                            <v-text-field
+                              v-model="user.password"
+                              type="password" 
+                              outlined
+                              placeholder="Password"
+                              color="error"
+                              class="mt-3"
+                              :rules="[rules.required]"
+                             ></v-text-field>
+
+                            <v-text-field
+                            v-model="user.confirm_password"
+                              type="password" 
+                              outlined
+                              placeholder="Confirmar Password"
+                              color="error"
+                              class="mt-3"
+                              :rules="[rules.required]"
+                            ></v-text-field>
+
                         </v-form>
+
+                        <v-alert dense :type="statusRegisterAlert" outlined v-if="alertRegistroShow">
+                          <span>{{ alertRegistroMsg }}</span>
+                        </v-alert>
+
                     </v-card-text>
+
                     <v-card-actions class="justify-end">
-                        <v-btn
-                        text
-                        @click="hide"
-                        color='error'
-                        >Close
-                        </v-btn>
-                        
-                        <v-btn
+                        <v-btn                       
                         text
                         @click="submid"
                         color='success'
                         :loading="loading"
                         :disabled="loading"
                         >    
-                          <span v-if="text">GUARDAR</span>
-                            <v-icon large v-if="iconOk" dark>
-                                check_circle
-                            </v-icon>
-                            <v-icon color="error" read large v-if="iconCancel" dark>
-                                cancel
-                            </v-icon>
+                          <span v-if="text">REGISTRAR</span>
+                          <v-icon large v-if="iconOk" dark>
+                            check_circle
+                          </v-icon>
+                          <v-icon color="error" read large v-if="iconCancel" dark>
+                            cancel
+                          </v-icon>
                         </v-btn>
+
+                        <v-btn
+                        text
+                        @click="hide"
+                        color='error'
+                        >Close</v-btn>
                     </v-card-actions>
                 </v-card>
                 </template>
             </v-dialog>
         </v-col>
-  </v-row >
-</div>
+    </div >
 </template>
  
 <script>
-import addMachine from "~/components/machine/AddMachine.vue";
 import axios from '@/plugins/axios';
-import Cookies from "js-cookie";
-import { mapState } from 'vuex';
 
 export default {
-  components:{
-    addMachine
+  props:{
+    id:{
+      type: Number,
+      /* required: true */
+    }
   },
     data(){
         return{
-          line:
-          {
-            name: "",
-            description: ""
-          },
-            maquinas_disponibles:['1', '2','4','6'],
+            statusRegisterAlert:'Success',
+            alertRegistroMsg: '',
+            alertRegistroShow: false,
             text:true,
             loader: null,
             iconOk:false,
             iconCancel:false,
             loading:false,
             dialog:false,
-            sec:['1', '2','4','6'],
-            empresas:['Systelec', 'Softys','Jhonson'],
+            empresas:[],
+            roles:[{rol:'Operador', id:0},{rol:'Administrador', id:1}],
             valid:true,
             rules: {
-                    required: v => !!v || "Este campo es obligatorio"
+                    required: v => !!v || "Este campo es obligatorio",
+                    email: v => /.+@.+/.test(v) || 'Por favor introduzca un email valido',
                     },
+            user:{
+              username:"",
+              email:"",
+              password:null,
+              confirm_password:null,
+              company_id:null,
+              rol_id:null
+            }
         }
     },
-    computed:{
-      ...mapState(['clienteID'])
-    },
     methods:{
-       async submid(){
-          try {
-            
-            if(this.$refs.form.validate()){
-              let token = Cookies.get('token');
+      async editarUsuario(){
+           try { 
+           if(this.$refs.form.validate()){
               this.text = false;
               this.loading = true;
-              this.loader = 'loading'
-
-              await axios.
-                post("machine", this.machine,{
-              headers: { Authorization: `Bearer ${token}`},
+              this.loader = 'loading';
+              this.user.company_id = this.user.company_id.id;
+              this.user.rol_id = this.user.rol_id.id;
+              console.log('user:', this.user);
+              await axios.put('register', this.user)
+              .then((res)=>{
+                console.log(res);
+                this.loader = null  
+                this.loading = false;
+                this.iconOk = true;     
+                this.statusRegisterAlert = 'success';
+                this.alertRegistroMsg = "Usuario Agregado";
+                this.alertRegistroShow = true;
+                this.$emit('click');
+                this.$refs.form.reset();
+                setTimeout(()=>{
+                this.alertRegistroShow = false;
+                this.iconOk = false;
+                this.text = true;
+                },3000)
               })
-                .then((res)=>{
-                  console.log(res);
-                  this.loader = null  
-                  this.loading = false;
-                  this.iconOk = true;
-                  this.$emit('click', this.machine);
-                  setTimeout(()=>{
-                  this.iconOk = false;
-                  this.text = true;
-                  },4000) 
-                })
-                .catch((error)=>{
-                  console.log(error);
-                  this.loader = null  
-                  this.loading = false;
-                  this.iconCancel = true;
-                  setTimeout(()=>{
-                  this.iconCancel = false;
-                  this.text = true;
-                  },4000) 
-                })
- 
             }
-          } catch (error) {
-              console.log(error);
-              this.loader = null  
-              this.loading = false;
-              this.iconCancel = true;
-              setTimeout(()=>{
-              this.iconCancel = false;
-              this.text = true;
-              },3000) 
+          }catch (error) {
+            console.log(error);
+            this.loader = null  
+            this.loading = false;
+            this.iconCancel = true
+            this.alertRegistroMsg = error.message;
+            this.statusRegisterAlert = 'error';
+            this.alertRegistroShow = true
+            setTimeout(()=>{
+            this.alertRegistroShow = false;
+            this.iconCancel = false;
+            this.text = true;
+            },5000)
           }
-        
-
         },
         hide(){
             this.dialog = false;
             this.$refs.form.reset();
         },
-        mostrar_add_machine(){
-          this.$refs.addMachine.show();
-        }
+        async getCompanies(){
+          try {
+            await axios.get('companyName',{
+            })
+            .then((res)=>{
+              //console.log('company Sec:', res.data.data)
+              this.empresas =  res.data.data;
+            })
+          } catch (error) {
+            console.log(error);
+          }
+        },
+        async getUser(){
+          try {
+            await axios.get(`user/${this.id}`,{
+            })
+            .then((res)=>{
+              //console.log('company Sec:', res.data.data)
+              this.empresas =  res.data.data;
+            })
+          } catch (error) {
+            console.log(error);
+          }
+        },
+    },
+    mounted(){
+      this.getCompanies();
     }
 }
 </script>

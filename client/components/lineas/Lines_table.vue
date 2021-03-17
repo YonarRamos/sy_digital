@@ -20,12 +20,12 @@
         <v-data-table
           class="mb-3"
           :headers="headers"
-          :items="lines"
+          :items="lineas"
           :search="search"
           :disable-sort="true"
-          :server-items-length="totalDataMachine"
-          @pagination="updateTableMachine($event)"
-          :footer-props="{ itemsPerPageOptions: [5, 10, 25] }"
+          :server-items-length="totalDataLines"
+          @pagination="getLinesData($event)"
+          :footer-props="{ itemsPerPageOptions: [1, 10, 25] }"
         >
           <template v-slot:[`item.editar`]="{ item }">
             <edit :editar="item" />
@@ -41,21 +41,18 @@
 </template>
 
 <script>
+import axios from '@/plugins/axios';
+import Cookies from "js-cookie";
+import { mapState } from "vuex";
+
 import Edit from '~/components/lineas/EditLine.vue';
 import Delete from "~/components/lineas/DeleteLine.vue";
 import Add from "~/components/lineas/AddLine.vue";
 
 export default {
   props:{
-    lines:{
-      type: Array,
-      required:true
-    },
-    totalDataMachine:{
-      type: Number,
-    },
     cliente:{
-      type:String
+      type: String
     }
   },
   components: {
@@ -65,20 +62,20 @@ export default {
   },
   data() {
     return {
-      machine:{
+      token: Cookies.get('token'),
+      lines:{
         name: "",
         section_id: "",
         company_id:"",
         description: "",
       },
+      lineas:[],
+      totalDataLines:10,
       search: '',
       company_id: "systelec",
       headers: [
         { text: 'Nombre', value: 'name', align: 'start', sortable: false },
         { text: 'Descripcion', value: 'description', sortable: false },
-        { text: 'Sección', value: 'section_id', align: 'center', sortable: false },
-        { text: 'Estatus', value: 'status_machine_id', align: 'center', sortable: false },
-        { text: 'Actualizado', value: 'last_update', align: 'center', sortable: false },
         { text: 'Editar', value: 'editar', align: 'center', sortable: false },
         {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false},
       ],
@@ -87,11 +84,32 @@ export default {
   methods:{
     updateTableMachine(e){
       this.$emit('click', e)
+    },
+   async getLinesData() {
+     console.log('test:', this.test);
+      try {
+        await axios
+        .get(`line/${this.clienteID}`,{
+          headers: { Authorization: `Bearer ${this.token}`}
+        })
+        .then((res)=>{
+          this.lineas = res.data.data;
+          this.totalDataLines = this.lineas.length;
+        })
+      } catch (error) {
+        console.log(error);
+      }
     }
   },
-  mounted(){
-    this.lines.push({editar:"fdsfsd",name:"dfsdf"});
-  }
+    watch:{
+      clienteID: function(){
+        console.log('cambio el cliente ID');
+        this.getLinesData();
+      }
+    },
+    computed:{
+      ...mapState(["clienteID"])
+    },
 }
 </script>
 <style scoped>

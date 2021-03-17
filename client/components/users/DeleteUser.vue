@@ -56,7 +56,7 @@ export default {
   props:{
     id:{
     type: Number,
-   /*  required:true */
+    required:true
     },
     name:{
       type: String
@@ -74,14 +74,14 @@ export default {
    async deleteMachine() {
       try {
         const token = Cookies.get('token');
-        await axios.delete(`maquina/${this.id}`, {
+        await axios.delete(`user/${this.id}`, {
           headers: { Authorization: `Bearer ${token}`
           },
         })
         .then(()=>{
           this.dialog = false;
           this.alertType="success";
-          this.alertMsg="Maquina Eliminada"
+          this.alertMsg="Usuario Eliminado"
           this.alertShow = true;
         });
       } catch (error) {

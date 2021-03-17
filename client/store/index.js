@@ -18,8 +18,8 @@ export const state = () => ({
   },
   dialogPassword: false,
   ots:[],
-  clienteID:1,
-  clienteName:'Seleccione una empresa',
+  clienteID: null,
+  clienteName: '',
   indexTab:'tab-1'
 });
 
@@ -81,7 +81,7 @@ export const actions = {
            })
            .then(res => {
              this.commit('SET_AUTH_AUTOMATIC', true );
-             console.log('Automatic:', res);
+             this.commit('SET_USER', res.data );
            }).catch(err => {               
            })                
      }

@@ -28,7 +28,7 @@
           :search="search"
           :disable-sort="true"
           :server-items-length="totalDataUsers"
-          @pagination="updateTableUsers($event)"
+          @pagination="getUsersData($event)"
           :footer-props="{ itemsPerPageOptions: [1, 10, 25] }"
         >
           <template v-slot:[`item.rol`]="{ item }">
@@ -39,7 +39,7 @@
           </template>
 
           <template v-slot:[`item.eliminar`]="{ item }">
-            <delete :delete="item" />
+            <delete :id="item.id" />
           </template>
         </v-data-table>
       </v-container>
@@ -48,17 +48,17 @@
 </template>
 
 <script>
+import axios from '@/plugins/axios';
+import Cookies from "js-cookie";
+import { mapState } from "vuex";
+
 import Add from '~/components/users/AddUser';
 import Edit from '~/components/users/EditUser';
 import Delete from '~/components/users/DeleteUser';
 
 export default {
   props:{
-    usuarios:{
-      type: Array,
-      required:true
-    },
-    totalDataUsers:{
+    clienteID:{
       type: Number,
       required: true
     },
@@ -73,6 +73,9 @@ export default {
   },
   data() {
     return {
+      token: Cookies.get('token'),
+      usuarios:[],
+      totalDataUsers: 10,
       user:{
         username:"",
         email:"",
@@ -84,9 +87,8 @@ export default {
       search: '',
       company_id: "systelec",
       headers: [
-        { text: 'Username', value: 'username', align: 'start', sortable: false },
+        { text: 'Username', value: 'name', align: 'start', sortable: false },
         { text: 'Email', value: 'email', sortable: false },
-        { text: 'Empresa', value: 'company_name', align: 'center', sortable: false },
         { text: 'Rol', value: 'rol', align: 'center', sortable: false },
         { text: 'Editar', value: 'editar', align: 'center', sortable: false },
         {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false},
@@ -97,13 +99,30 @@ export default {
     updateTableUsers(e){
       this.$emit('click', e)
     },
+   async getUsersData(){
+      try {
+        await axios
+        .get(`user/${this.clienteID}`,{
+          headers: { Authorization: `Bearer ${this.token}`}
+        })
+        .then((res)=>{
+          this.usuarios = res.data.data.data;
+          this.totalDataUsers = this.usuarios.length;
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    }
   },
   filters:{
     rolParse(value){
       return value == 1 ? 'Administrador' : 'Operador';
     }
   },
-  mounted(){
+  watch:{
+    clienteID: function(){
+      this.getUsersData();
+    }
   }
 }
 </script>

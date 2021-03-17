@@ -30,15 +30,15 @@
           :search="search"
           :disable-sort="true"
           :server-items-length="totalDataMachine"
-          @pagination="updateTableMachine($event)"
+          @pagination="getMachineData($event)"
           :footer-props="{ itemsPerPageOptions: [5, 10, 25] }"
         >
           <template v-slot:[`item.editar`]="{ item }">
-            <!-- <edit :editar="item" /> -->
+            <edit :editar="item" />
           </template>
 
           <template v-slot:[`item.eliminar`]="{ item }">
-            <!-- <delet :delete="item" /> -->
+            <delete :delete="item" />
           </template>
         </v-data-table>
     <add class="px-3 mb-2" @click="updateTableMachine" ref="add"/>
@@ -46,16 +46,18 @@
 </template>
 
 <script>
-import add from '~/components/machine/AddMachine.vue';
+import axios from '@/plugins/axios';
+import Cookies from "js-cookie";
+import { mapState } from "vuex";
+
+import Add from '~/components/machine/AddMachine.vue';
+import Edit from '~/components/machine/EditMachine';
+import Delete from '~/components/machine/DeleteMachine.vue';
 
 
 export default {
   props:{
-    maquinas:{
-      type: Array,
-      required:true
-    },
-    totalDataMachine:{
+    clienteID:{
       type: Number,
       required: true
     },
@@ -64,23 +66,29 @@ export default {
     }
   },
   components: {
-    add
+    Add,
+    Edit,
+    Delete
   },
   data() {
     return {
+      token: Cookies.get('token'),
       machine:{
         name: "",
         section_id: "",
         company_id:"",
         description: "",
       },
+      maquinas:[],
+      totalDataMachine: 10,
       search: '',
       company_id: "systelec",
       headers: [
         { text: 'Nombre', value: 'name', align: 'start', sortable: false },
-        { text: 'Descripcion', value: 'description', sortable: false },
-        { text: 'Sección', value: 'section_id', align: 'center', sortable: false },
-        { text: 'Estatus', value: 'status_machine_id', align: 'center', sortable: false },
+        { text: 'Descripción', value: 'description', sortable: false },
+        { text: 'Sector', value: 'name', align: 'center', sortable: false },
+        { text: 'Estatus', value: 'status_machine', align: 'center', sortable: false },
+        { text: 'Línea', value: 'line', align: 'center', sortable: false },
         { text: 'Actualizado', value: 'last_update', align: 'center', sortable: false },
         { text: 'Editar', value: 'editar', align: 'center', sortable: false },
         {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false},
@@ -93,9 +101,26 @@ export default {
     },
     mostrarAdd(){
       this.$refs.add.show();
+    },
+   async getMachineData(){
+      try {
+        await axios
+        .get(`machine/${this.clienteID}`,{
+          headers: { Authorization: `Bearer ${this.token}`}
+        })
+        .then((res)=>{
+          this.maquinas = res.data.data.data;
+          this.totalDataMachine = this.maquinas.length;
+        })
+      } catch (error) {
+        console.log(error);
+      }
     }
   },
-  mounted(){
+  watch:{
+    clienteID: function(){
+      this.getMachineData();
+    }
   }
 }
 </script>
