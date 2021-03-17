@@ -15,7 +15,7 @@
               flat
             ></v-text-field>
             
-            <add class="px-3 mb-2" @click="getCompanies" />    
+            <add class="px-3 mb-2" @click="clickMachine" />    
         
         </v-row>
           <v-data-table
@@ -28,8 +28,9 @@
         >
             <template v-slot:expanded-item="{ headers, item }">
               <td :colspan="headers.length" class="pa-0">
-                <machine v-if="selector == 1" :maquinas="maquinas" :totalDataMachine="totalDataMachine" :cliente="item.name"/>
-                <users v-if="selector == 2" :usuarios="usuarios" :totalDataUsers="totalDataUsers" :cliente="item.name"/>
+                <machine v-if="selector == 1" :cliente="item.name" :clienteID="item.id" ref="machine"/>
+                <users v-if="selector == 2" :cliente="item.name" :clienteID="item.id" ref="users"/>
+                <lines v-if="selector == 3" :cliente="item.name" :clienteID="item.id" ref="lines"/>
               </td>
             </template>
 
@@ -41,12 +42,16 @@
               <a @click="clickUsers(item, item.id)">Ver detalle</a>
             </template>
 
+            <template v-slot:[`item.lineas`]="{ item }">
+              <a @click="clickLines(item, item.id)">Ver detalle</a>
+            </template>
+
             <template v-slot:[`item.editar`]="{ item }">
               <edit :editar="item" />
             </template>
 
             <template v-slot:[`item.eliminar`]="{ item }">
-              <delet :delete="item" />
+              <delete :delete="item" />
             </template>
 
         </v-data-table>
@@ -58,41 +63,39 @@
 <script>
 import Cookies from "js-cookie";
 import axios from '@/plugins/axios';
+import { mapState } from "vuex";
 
-import edit from '@/components/common/editar';
-import Add from "~/components/companies/add.vue";
-import delet from '@/components/common/eliminar';
+import Add from "~/components/companies/AddCompany.vue";
+import Delete from "~/components/companies/DeleteCompany.vue";
+import Edit from "~/components/companies/EditCompany.vue";
 import machine from "~/components/companies/machine";
 import users from "~/components/companies/users";
+import lines from "~/components/companies/lines.vue";
+
 
 export default {
   props:{
-/*     maquinas:{
-      type: Array,
-      required:true
-    },
-    totalDataMachine:{
-      type: Number,
-      required: true
-    },
     cliente:{
       type:String
-    } */
+    }
   },
   components: {
-    edit,
     Add,
-    delet,
     machine,
-    users
+    users,
+    Delete,
+    Edit,
+    lines
   },
   data() {
     return {
+        token: Cookies.get('token'),
         selector:0,
         totalDataMachine:0,
         totalDataUsers:0,
         maquinas:[],
         usuarios:[],
+        lineas:[],
         expanded:[],
         companies:[],
         totalDataCompanies:0,
@@ -107,7 +110,7 @@ export default {
       headers: [
         { text: 'Nombre', value: 'name', align: 'start', sortable: false },
         { text: 'Descripcion', value: 'description', sortable: false },
-        { text: 'Equipos', value: 'equipos', align: 'center', sortable: false },
+        /* { text: 'Equipos', value: 'equipos', align: 'center', sortable: false }, */
         { text: 'Lineas', value: 'lineas', align: 'center', sortable: false },
         { text: 'Maquinas', value: 'machine', align: 'center', sortable: false },
         { text: 'Usuarios', value: 'users', align: 'center', sortable: false },
@@ -117,90 +120,52 @@ export default {
     }
   },
   methods:{
-    clickMachine(value, clienteID) {
+    clickMachine(value) {
       this.selector = 1;
       if(this.expanded.length > 0){
         this.expanded = []
       }else{
-      this.expanded.push(value)
-      this.cargarDatosTablaMachine(null,clienteID);
+      this.expanded.push(value);
       }
     },
-    clickUsers(value, clienteID) {
+    clickUsers(value) {
       this.selector = 2;
       if(this.expanded.length > 0){
         this.expanded = []
       }else{
-      this.expanded.push(value)
-      this.cargarDatosTablaUsers(null,clienteID);
+      this.expanded.push(value);
       }
     },
-    getCompanies(){
-        try {
-            let token = Cookies.get('token');
-            axios.get('company',{
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            .then((res)=>{
-                console.log(res.data.data.data);
-                this.companies = res.data.data.data;
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    },
-    async cargarDatosTablaMachine(e, clienteID){
-        try {
-            let token = Cookies.get('token');
-            e ? this.page = e.page : this.page = 1;
-            e ? this.perPage = e.itemsPerPage : this.perPage = 10;
-
-            await axios.get(`company/${clienteID}`,
-              {
-                headers: { Authorization: `Bearer ${token}`},
-                params: {
-                page: this.page ,
-                perPage: this.perPage
-                }
-              })
-          .then((res)=>{
-            console.log('Maquinas:', res.data.data[0].machine);
-            this.maquinas = res.data.data[0].machine;  
-            this.totalDataMachine = res.data.data[0].machine.length;
-          })
-        } catch (error) {
-          console.log(error)
-        }
-      },
-      async cargarDatosTablaUsers(e, clienteID){
-        try {
-            let token = Cookies.get('token');
-            e ? this.page = e.page : this.page = 1;
-            e ? this.perPage = e.itemsPerPage : this.perPage = 10;
-
-            await axios.get(`user/${clienteID}`,
-              {
-                headers: { Authorization: `Bearer ${token}`},
-                params: {
-                page: this.page ,
-                perPage: this.perPage
-                }
-              })
-          .then((res)=>{
-            console.log('Users:', res.data.data.data);
-            this.usuarios = res.data.data.data;
-            this.totalDataUsers = this.usuarios.length;
-          })
-        } catch (error) {
-          console.log(error)
-        }
+    clickLines(value) {
+      this.selector = 3;
+      if(this.expanded.length > 0){
+        this.expanded = []
+      }else{
+      this.expanded.push(value);
       }
+    },
+      async getCompany(){
+      try {
+        let token = Cookies.get('token');
+        await axios.get('companyname',{
+              headers: { Authorization: `Bearer ${token}`}
+              })
+        .then((res)=>{
+          console.log('company', res.data.data)
+          this.companies = res.data.data;
+          this.totalDataCompanies = this.companies.length;
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
   },
   mounted(){
-      this.getCompanies();
-  }
+    this.getCompany();
+  },
+  computed:{
+      ...mapState(["clienteID"]),
+  },
 }
 </script>
 

@@ -22,7 +22,7 @@
                 </v-col>
                 <v-col cols="12" md="6" class="py-0">
                   <v-col class="px-0">
-                    <v-combobox
+                    <v-autocomplete
                       v-model="datosOT.sector"
                       :items="items"
                       label="Sector"
@@ -31,10 +31,10 @@
                       hide-details
                       style="cursor: pointer"
                       :disable-lookup="true"
-                    ></v-combobox>
+                    ></v-autocomplete>
                   </v-col>
                   <v-col class="px-0">
-                    <v-combobox
+                    <v-autocomplete
                       v-model="datosOT.linea"
                       :items="items"
                       label="Linea"
@@ -42,7 +42,7 @@
                       dense
                       hide-details
                       style="cursor: pointer"
-                    ></v-combobox>
+                    ></v-autocomplete>
                   </v-col>
                 </v-col>
               </v-row>
@@ -79,7 +79,7 @@
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <v-combobox
+                  <v-autocomplete
                     v-model="datosOT.maquina"
                     :items="items"
                     label="Máquina"
@@ -87,7 +87,7 @@
                     dense
                     hide-details
                     style="cursor: pointer"
-                  ></v-combobox>
+                  ></v-autocomplete>
                 </v-col>
 
                 <v-col cols="12" md="6">
@@ -122,7 +122,7 @@
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <v-combobox
+                  <v-autocomplete
                     v-model="datosOT.serie"
                     :items="items"
                     label="Serie"
@@ -130,7 +130,7 @@
                     dense
                     hide-details
                     style="cursor: pointer"
-                  ></v-combobox>
+                  ></v-autocomplete>
                 </v-col>
 
                 <v-col cols="12" md="6">
@@ -164,7 +164,7 @@
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <v-combobox
+                  <v-autocomplete
                     v-model="datosOT.tarea"
                     :items="['M.M.', 'M.E.']"
                     label="Tarea"
@@ -172,11 +172,11 @@
                     dense
                     hide-details
                     style="cursor: pointer"
-                  ></v-combobox>
+                  ></v-autocomplete>
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <v-combobox
+                  <v-autocomplete
                     v-model="datosOT.modoIngreso"
                     :items="['1', '2']"
                     label="Modo Ingreso"
@@ -184,18 +184,76 @@
                     dense
                     hide-details
                     style="cursor: pointer"
-                  ></v-combobox>
+                  ></v-autocomplete>
                 </v-col>
-                <v-col class="d-flex justify-end">
-                  <div>
-                    <v-img
-                      src="../logo-softys.png"
-                      height="42px"
-                      width="94px"
-                      style="position: relative"
-                    >
-                    </v-img>
-                  </div>
+                <v-col cols="12" md="6" class="pt-0 mt-0">
+                    <small style="color:gray;">Frecuencia:</small>
+                    <v-row>
+                      <v-col cols="3" class="pt-0 pr-0">
+                        <v-checkbox
+                        v-model="diario"
+                        label="Diario"
+                        hide-details
+                        dense
+                        class="pt-0 mt-0"
+                        ></v-checkbox>
+                        <v-checkbox
+                        v-model="semanal"
+                        label="Semanal"
+                        hide-details
+                        dense
+                        class="pt-0 mt-0"
+                        ></v-checkbox>
+                      </v-col>
+                      <v-col cols="3" class="pt-0">
+                        <v-checkbox
+                          v-model="mensual"
+                          label="Mensual"
+                          hide-details
+                          dense
+                          class="pt-0 mt-0"
+                        ></v-checkbox>
+                        <v-checkbox
+                          v-model="anual"
+                          label="Anual"
+                          hide-details
+                          class="pt-0 mt-0"
+                          dense
+                        ></v-checkbox>                        
+                      </v-col>
+
+                      <v-col class="pt-0">
+                        <v-menu
+                          ref="menu"
+                          v-model="menuHasta"
+                          :close-on-content-click="true"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              v-model="dateHasta"
+                              label="hasta"
+                              prepend-inner-icon="mdi-calendar"
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                              dense
+                              outlined
+                              hide-details
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="dateHasta"
+                            no-title
+                            scrollable
+                            @change="definirFrecuencia"
+                          >
+                          </v-date-picker>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
                 </v-col>
               </v-row>
             </v-container>
@@ -230,6 +288,7 @@ import DataTableOT from '~/components/common/dataTableOT.vue'
 import BtnPDF from '~/components/common/btnPDF'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
+import moment from 'moment';
 
 export default {
   layout: 'layoutitem',
@@ -246,8 +305,15 @@ export default {
       disable: true,
       menuSolicitud: false,
       menuRealizado: false,
+      diario:false,
+      semanal:false,
+      mensual:false,
+      anual:false,
       menu: false,
       menu1: false,
+      menuHasta:false,
+      frecuencia:[],
+      dateHasta:new Date().toISOString().substr(0, 10),
       items: ['Item 1', 'Item 2', 'Item 3'],
         datosOT:{
           id:"",
@@ -276,29 +342,76 @@ export default {
       },
   },
   mounted() {
-    this.showBar = false
+    this.showBar = false;
   },
   methods: {
     ...mapMutations(["toggleInfoModal","ocultarInfoModal","cargarOTS"]),
-    guardarOT(){
-      this.datosOT.id = `OT_0${this.ots.length + 1}_ME_AR-${Date.now()}`;
-      this.datosOT.data.push(...this.arrayOT);
-      this.cargarOTS(this.datosOT);
-        this.datosOT = {
-          id:"",
-          sector:"",
-          linea:"",
-          maquina:"",
-          serie:"",
-          grupo:"",
-          tarea:"",
-          f_solicitud: new Date().toISOString().substr(0, 10),
-          f_realizado: new Date().toISOString().substr(0, 10),
-          solicitante:"",
-          ejecucion:"",
-          modoIngreso:"",
-          data:[]
+
+    definirFrecuencia(){
+      this.frecuencia=[];
+      console.log(this.dateHasta);
+      this.frecuencia.push(this.datosOT.f_solicitud);
+
+      if(this.diario){
+        while(moment(this.datosOT.f_solicitud).format() < moment(this.dateHasta).format()){
+          this.datosOT.f_solicitud = moment(this.datosOT.f_solicitud).add(1,'day').format().slice(0,10);
+          this.frecuencia.push(this.datosOT.f_solicitud);
+          console.log('Array FRecuencia:', this.frecuencia);
         }
+      }
+
+      if(this.semanal){
+        while(moment(this.datosOT.f_solicitud).format() < moment(this.dateHasta).format()){
+          this.datosOT.f_solicitud = moment(this.datosOT.f_solicitud).add(1,'week').format().slice(0,10);
+          this.frecuencia.push(this.datosOT.f_solicitud);
+          console.log('Array FRecuencia:', this.frecuencia);
+        }
+        this.frecuencia.splice(this.frecuencia.length-1,1);//eliminamos la semana que se agrega fuera de fecha
+      }
+
+      if(this.mensual){
+        while(moment(this.datosOT.f_solicitud).format() < moment(this.dateHasta).format()){
+          this.datosOT.f_solicitud = moment(this.datosOT.f_solicitud).add(1,'month').format().slice(0,10);
+          this.frecuencia.push(this.datosOT.f_solicitud);
+          console.log('Array FRecuencia:', this.frecuencia);
+        }
+      }
+
+      if(this.anual){
+        while(moment(this.datosOT.f_solicitud).format() < moment(this.dateHasta).format()){
+          this.datosOT.f_solicitud = moment(this.datosOT.f_solicitud).add(1,'year').format().slice(0,10);
+          this.frecuencia.push(this.datosOT.f_solicitud);
+          console.log('Array FRecuencia:', this.frecuencia);
+        }
+      }
+
+    },
+    guardarOT(){
+      this.datosOT.data.push(...this.arrayOT);//Este Array se llena desde el componente DataTableOT
+      if(this.frecuencia.length > 0){
+         for (const item of this.frecuencia) {
+          this.datosOT.f_solicitud = item;
+          this.datosOT.id = `OT_0${this.ots.length + 1}_ME_AR-${moment(this.datosOT.f_solicitud)}`;
+          this.cargarOTS({
+            id:this.datosOT.id,
+            sector:this.datosOT.sector,
+            linea:this.datosOT.linea,
+            maquina:this.datosOT.maquina,
+            serie:this.datosOT.serie,
+            grupo:this.datosOT.grupo,
+            tarea:this.datosOT.tarea,
+            f_solicitud:item,
+            f_realizado:this.datosOT.f_realizado,
+            solicitante:this.datosOT.solicitante,
+            ejecucion:this.datosOT.ejecucion,
+            modoIngreso:this.datosOT.modoIngreso,
+            data:this.arrayOT
+          });
+        }
+      }else{
+        this.cargarOTS(this.datosOT);
+      }
+      
       this.toggleInfoModal({
         dialog: true,
         msj: `OT Agregada`,

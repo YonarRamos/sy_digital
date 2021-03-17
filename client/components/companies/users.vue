@@ -1,14 +1,14 @@
 <template>
-  <v-container>
-    <v-card color="#EBEDEF" >
-      <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div> 
-      <v-container class="pt-0">
+  <v-container style="background:#F5F6F8;box-shadow: inset 0 0 20px #EBEDEF;">
+<!--     <v-card color="#EBEDEF" >
+      <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div>  -->
+      <v-container class="pt-0" color="#C1C6CC">
         <v-row class="ml-0">
 
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="Buscar en Maquinas"
+              label="Buscar Usuario"
               background-color="white"
               single-line
               hide-details
@@ -21,13 +21,14 @@
         </v-row>
 
         <v-data-table
+          style="background:#F9F9F9"
           class="mb-3"
           :headers="headers"
           :items="usuarios"
           :search="search"
           :disable-sort="true"
           :server-items-length="totalDataUsers"
-          @pagination="updateTableUsers($event)"
+          @pagination="getUsersData($event)"
           :footer-props="{ itemsPerPageOptions: [1, 10, 25] }"
         >
           <template v-slot:[`item.rol`]="{ item }">
@@ -38,26 +39,26 @@
           </template>
 
           <template v-slot:[`item.eliminar`]="{ item }">
-            <delet :delete="item" />
+            <delete :id="item.id" />
           </template>
         </v-data-table>
       </v-container>
-    </v-card>
+   <!--  </v-card> -->
   </v-container>
 </template>
 
 <script>
-import add from '@/components/users/add';
-import edit from '@/components/common/editar';
-import delet from '@/components/common/eliminar';
+import axios from '@/plugins/axios';
+import Cookies from "js-cookie";
+import { mapState } from "vuex";
+
+import Add from '~/components/users/AddUser';
+import Edit from '~/components/users/EditUser';
+import Delete from '~/components/users/DeleteUser';
 
 export default {
   props:{
-    usuarios:{
-      type: Array,
-      required:true
-    },
-    totalDataUsers:{
+    clienteID:{
       type: Number,
       required: true
     },
@@ -66,12 +67,15 @@ export default {
     }
   },
   components: {
-    edit,
-    add,
-    delet,
+    Add,
+    Edit,
+    Delete
   },
   data() {
     return {
+      token: Cookies.get('token'),
+      usuarios:[],
+      totalDataUsers: 10,
       user:{
         username:"",
         email:"",
@@ -83,9 +87,8 @@ export default {
       search: '',
       company_id: "systelec",
       headers: [
-        { text: 'Username', value: 'username', align: 'start', sortable: false },
+        { text: 'Username', value: 'name', align: 'start', sortable: false },
         { text: 'Email', value: 'email', sortable: false },
-        { text: 'Empresa', value: 'company_name', align: 'center', sortable: false },
         { text: 'Rol', value: 'rol', align: 'center', sortable: false },
         { text: 'Editar', value: 'editar', align: 'center', sortable: false },
         {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false},
@@ -96,13 +99,30 @@ export default {
     updateTableUsers(e){
       this.$emit('click', e)
     },
+   async getUsersData(){
+      try {
+        await axios
+        .get(`user/${this.clienteID}`,{
+          headers: { Authorization: `Bearer ${this.token}`}
+        })
+        .then((res)=>{
+          this.usuarios = res.data.data.data;
+          this.totalDataUsers = this.usuarios.length;
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    }
   },
   filters:{
     rolParse(value){
       return value == 1 ? 'Administrador' : 'Operador';
     }
   },
-  mounted(){
+  watch:{
+    clienteID: function(){
+      this.getUsersData();
+    }
   }
 }
 </script>
@@ -110,7 +130,7 @@ export default {
 <style scoped>
   .cliente{
     font-weight:bold;
-    color: rgb(193, 198, 204);
+    color: #EBEDEF;
     font-family:Roboto, sans-serif;
     font-size: 15px;
     padding-top: 2px;

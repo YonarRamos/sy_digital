@@ -18,47 +18,58 @@
                     color="error"
                     dark
                     >
-                      <strong>Agregar Máquina</strong>
+                      <strong>Agregar Línea</strong>
                     </v-toolbar>
                     <v-card-text>
                         <v-form ref="form" v-model="valid" lazy-validation>
-                            <v-text-field
-                            v-model="machine.name" 
-                            outlined
-                            placeholder="Nombre"
-                            color="error"
-                            class="mt-5"
-                            :rules="[rules.required]"
-                            ></v-text-field>
-                            <v-select
-                            v-model="machine.company_id"
-                            :items="sec"
-                            label="Empresa"
-                            outlined
-                            class="mt-5"
-                            color="error"
-                            :rules="[rules.required]"
-                            ></v-select>
-                          <v-select
-                        v-model="machine.section_id"
-                            :items="sec"
-                            label="Sección"
-                            outlined
-                            class="mt-5"
-                            color="error"
-                            :rules="[rules.required]"
-                            ></v-select>
-                        <v-textarea
-                        v-model="machine.description"
-                            outlined
-                            placeholder="Descripción"
-                            color="error"
-                            class="mt-5"
-                            :rules="[rules.required]"
-                            ></v-textarea>
+                          <v-text-field
+                          v-model="line.name" 
+                          outlined
+                          placeholder="Nombre"
+                          color="error"
+                          class="mt-5"
+                          :rules="[rules.required]"
+                          ></v-text-field>
+
+<!--                           <v-row>
+                            <v-col>
+                              <v-select
+                                :items="maquinas_disponibles"
+                                :menu-props="{ maxHeight: '400' }"
+                                label="Máquina"
+                                multiple
+                                placeholder="Asociar máquinas"
+                                persistent-hint
+                                outlined
+                                class="mt-5 mx-0"
+                                color="error"
+                                :rules="[rules.required]"
+                              ></v-select>
+                            </v-col>
+
+                            <v-col cols="2" class="d-flex align-center">
+                              <v-btn class="mb-3" text color="primary" @click="mostrar_add_machine">Asociar Línea<v-icon>mdi-plus</v-icon> </v-btn>
+                            </v-col>
+                            <add-machine ref="addMachine"/>
+                            </v-row> -->
+                            
+                          <v-textarea
+                          v-model="line.description"
+                          outlined
+                          placeholder="Descripción"
+                          color="error"
+                          :rules="[rules.required]"
+                          ></v-textarea>
                         </v-form>
                     </v-card-text>
                     <v-card-actions class="justify-end">
+                        <v-btn
+                        text
+                        @click="hide"
+                        color='error'
+                        >Close
+                        </v-btn>
+                        
                         <v-btn
                         text
                         @click="submid"
@@ -74,12 +85,6 @@
                                 cancel
                             </v-icon>
                         </v-btn>
-
-                        <v-btn
-                        text
-                        @click="hide"
-                        color='error'
-                        >Close</v-btn>
                     </v-card-actions>
                 </v-card>
                 </template>
@@ -90,19 +95,23 @@
 </template>
  
 <script>
+import addMachine from "~/components/machine/AddMachine.vue";
 import axios from '@/plugins/axios';
 import Cookies from "js-cookie";
+import { mapState } from 'vuex';
 
 export default {
+  components:{
+    addMachine
+  },
     data(){
         return{
-          machine:
+          line:
           {
             name: "",
-            section_id: "",
-            company_id:"",
             description: ""
           },
+            maquinas_disponibles:['1', '2','4','6'],
             text:true,
             loader: null,
             iconOk:false,
@@ -116,6 +125,9 @@ export default {
                     required: v => !!v || "Este campo es obligatorio"
                     },
         }
+    },
+    computed:{
+      ...mapState(['clienteID'])
     },
     methods:{
        async submid(){
@@ -170,6 +182,9 @@ export default {
         hide(){
             this.dialog = false;
             this.$refs.form.reset();
+        },
+        mostrar_add_machine(){
+          this.$refs.addMachine.show();
         }
     }
 }

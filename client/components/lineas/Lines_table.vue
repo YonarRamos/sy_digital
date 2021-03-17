@@ -1,14 +1,13 @@
 <template>
   <v-container>
-    <v-card color="#EBEDEF" >
+    <v-card color="#EBEDEF">
       <div class="cliente pb-0 mx-3">{{cliente.toUpperCase()}}</div> 
       <v-container class="pt-0">
         <v-row class="ml-0">
-
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="Buscar en Usuarios"
+              label="Buscar Linea"
               background-color="white"
               single-line
               hide-details
@@ -16,30 +15,24 @@
               flat
             ></v-text-field>
             
-            <add class="px-3 mb-2" @click="$emit('click')" />  
-        
+            <add class="px-3 mb-2" @click="updateTableMachine" />   
         </v-row>
-
         <v-data-table
           class="mb-3"
           :headers="headers"
-          :items="usuarios"
+          :items="lineas"
           :search="search"
-          @pagination="getUsersData($event)"
           :disable-sort="true"
-          :server-items-length="totalDataUsers"
-
+          :server-items-length="totalDataLines"
+          @pagination="getLinesData($event)"
           :footer-props="{ itemsPerPageOptions: [1, 10, 25] }"
         >
-          <template v-slot:[`item.rol`]="{ item }">
-            {{ item.rol | rolParse}}
-          </template>
           <template v-slot:[`item.editar`]="{ item }">
-            <edit :id="item.id" />
+            <edit :editar="item" />
           </template>
 
           <template v-slot:[`item.eliminar`]="{ item }">
-            <delete :id="item.id" />
+            <delete :delete="item" />
           </template>
         </v-data-table>
       </v-container>
@@ -52,10 +45,10 @@ import axios from '@/plugins/axios';
 import Cookies from "js-cookie";
 import { mapState } from "vuex";
 
-import Add from '@/components/users/AddUser.vue';
-import Edit from '@/components/users/EditUser.vue';
-import Delete from '@/components/users/DeleteUser';
-         /*  @pagination="$emit('click')" */
+import Edit from '~/components/lineas/EditLine.vue';
+import Delete from "~/components/lineas/DeleteLine.vue";
+import Add from "~/components/lineas/AddLine.vue";
+
 export default {
   props:{
     cliente:{
@@ -70,52 +63,48 @@ export default {
   data() {
     return {
       token: Cookies.get('token'),
-      user:{
-        username:"",
-        email:"",
-        password:null,
-        confirm_password:null,
-        company_id:null,
-        rol_id:null
+      lines:{
+        name: "",
+        section_id: "",
+        company_id:"",
+        description: "",
       },
-      usuarios:[],
-      totalDataUsers:10,
+      lineas:[],
+      totalDataLines:10,
       search: '',
-      company_id: "",
+      company_id: "systelec",
       headers: [
-        { text: 'Name', value: 'name', align: 'start', sortable: false },
-        { text: 'Email', value: 'email', sortable: false },
-        { text: 'Rol', value: 'rol', align: 'center', sortable: false },
+        { text: 'Nombre', value: 'name', align: 'start', sortable: false },
+        { text: 'Descripcion', value: 'description', sortable: false },
         { text: 'Editar', value: 'editar', align: 'center', sortable: false },
-        {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false}
+        {text: 'Eliminar', value: 'eliminar', align: 'center', sortable: false},
       ],
     }
   },
   methods:{
-   async getUsersData(){
+    updateTableMachine(e){
+      this.$emit('click', e)
+    },
+   async getLinesData() {
+     console.log('test:', this.test);
       try {
         await axios
-        .get(`user/${this.clienteID}`,{
+        .get(`line/${this.clienteID}`,{
           headers: { Authorization: `Bearer ${this.token}`}
         })
         .then((res)=>{
-          this.usuarios = res.data.data.data;
-          this.totalDataUsers = this.usuarios.length;
+          this.lineas = res.data.data;
+          this.totalDataLines = this.lineas.length;
         })
       } catch (error) {
         console.log(error);
       }
     }
   },
-  filters:{
-    rolParse(value){
-      return value == 1 ? 'Administrador' : 'Operador';
-    }
-  },
     watch:{
       clienteID: function(){
         console.log('cambio el cliente ID');
-        this.getUsersData();
+        this.getLinesData();
       }
     },
     computed:{
@@ -123,7 +112,6 @@ export default {
     },
 }
 </script>
-
 <style scoped>
   .cliente{
     font-weight:bold;

@@ -79,6 +79,7 @@ export default {
           .then((res) => {
             let token = res.data.datos
             let user = res.data.data
+            console.log('user:', user)
             this.SET_USER(user)
             this.SET_AUTH(token)
           })

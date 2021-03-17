@@ -7,7 +7,7 @@
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="Buscar en Equipos"
+              label="Buscar Equipo"
               background-color="white"
               single-line
               hide-details
@@ -15,25 +15,25 @@
               flat
             ></v-text-field>
             
-            <add class="px-3 mb-2" @click="updateTableMachine" />    
+            <add class="px-3 mb-2" @click="updateTableMachine" />
         
         </v-row>
         <v-data-table
           class="mb-3"
           :headers="headers"
-          :items="maquinas"
+          :items="equipos"
           :search="search"
           :disable-sort="true"
           :server-items-length="totalDataMachine"
           @pagination="updateTableMachine($event)"
           :footer-props="{ itemsPerPageOptions: [5, 10, 25] }"
         >
-          <template v-slot:[`item.editar`]="{ item }">
+          <template v-slot:[`item.editar`]='{ item }'>
             <edit :editar="item" />
           </template>
 
-          <template v-slot:[`item.eliminar`]="{ item }">
-            <delet :delete="item" />
+          <template v-slot:[`item.eliminar`]='{ item }'>
+            <delete :delete="item" />
           </template>
         </v-data-table>
       </v-container>
@@ -42,28 +42,27 @@
 </template>
 
 <script>
-import edit from '@/components/common/editar';
-import add from '@/components/machine/add.vue';
-import delet from '@/components/common/eliminar';
+import Add from "~/components/equipos/AddEquipo.vue";
+import Edit from "~/components/equipos/EditEquipo";
+import Delete from "~/components/equipos/DeleteEquipo";
 
 export default {
   props:{
-    maquinas:{
+    equipos:{
       type: Array,
       required:true
     },
     totalDataMachine:{
       type: Number,
-      required: true
     },
     cliente:{
       type:String
     }
   },
   components: {
-    edit,
-    add,
-    delet,
+    Add,
+    Edit,
+    Delete
   },
   data() {
     return {
@@ -89,9 +88,10 @@ export default {
   methods:{
     updateTableMachine(e){
       this.$emit('click', e)
-    },
+    }
   },
   mounted(){
+    this.equipos.push({name:"Prueba"})
   }
 }
 </script>

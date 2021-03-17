@@ -1,20 +1,16 @@
 <template>
-  <v-row justify="end">
-        <v-col cols="auto">
+  <div>
+        <div>
+          <v-btn height="48" elevation="0" color="primary" @click="dialog=true">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </div>
+        <v-col cols="auto" v-if="dialog">
             <v-dialog
                 transition="dialog-bottom-transition"
                 max-width="600"
                 v-model = "dialog"
             >
-                <template v-slot:activator="{ on, attrs }">
-                    <a 
-                    v-bind="attrs"
-                    v-on="on"
-                    >
-                    ¿Aún no tienes cuenta? Registrate Aquí
-                    </a>              
-                </template>
-
                 <template>
                 <v-card>
                     <v-toolbar
@@ -46,25 +42,32 @@
                               :rules="[rules.required, rules.email]"
                             ></v-text-field>
 
-                            <v-select
+                              <v-autocomplete
                               v-model="user.company_id"
-                              :items="empresas"
-                              label="Empresa"
-                              outlined
-                              class="mt-3"
-                              color="error"
-                              :rules="[rules.required]"
-                            ></v-select>
+                                :items="empresas"
+                                item-text="name"
+                                return-object
+                                :menu-props="{ maxHeight: '400' }"
+                                placeholder="Asociar a la siguiente empresa"
+                                label="Compañia"
+                                outlined
+                                hide-details
+                                class="mt-3"
+                                color="error"
+                                :rules="[rules.required]"
+                              ></v-autocomplete>
 
-                            <v-select
+                            <v-autocomplete
                               v-model="user.rol_id"
                               :items="roles"
-                              label="rol"
+                              item-text="rol"
+                              return-object
+                              label="Rol"
                               outlined
                               class="mt-3"
                               color="error"
                               :rules="[rules.required]"
-                            ></v-select>
+                            ></v-autocomplete>
 
                             <v-text-field
                               v-model="user.password"
@@ -121,7 +124,7 @@
                 </template>
             </v-dialog>
         </v-col>
-    </v-row >
+    </div >
 </template>
  
 <script>
@@ -140,16 +143,7 @@ export default {
             loading:false,
             dialog:false,
             empresas:[],
-            companies: {
-              'Systelec': 1, 
-              'Softys': 2,
-              'Jhonson': 3
-              },
-            roles:['Operador','Administrador'],
-            roles_id:{
-              'Operador' : parseInt(0), 
-              'Administrador' : parseInt(1)
-            },
+            roles:[{rol:'Operador', id:0},{rol:'Administrador', id:1}],
             valid:true,
             rules: {
                     required: v => !!v || "Este campo es obligatorio",
@@ -167,22 +161,24 @@ export default {
     },
     methods:{
       async submid(){
-          try {
-            if(this.$refs.form.validate()){
+           try { 
+           if(this.$refs.form.validate()){
               this.text = false;
               this.loading = true;
               this.loader = 'loading';
-              this.user.company_id = this.companies[this.user.company_id];
-              this.user.rol_id = this.roles_id[this.user.rol_id];
-              console.log(this.user);
+              this.user.company_id = this.user.company_id.id;
+              this.user.rol_id = this.user.rol_id.id;
+              console.log('user:', this.user);
               await axios.post('register', this.user)
               .then((res)=>{
                 console.log(res);
                 this.loader = null  
                 this.loading = false;
                 this.iconOk = true;     
-                this.alertRegistroMsg = res.data.data.message
+                this.statusRegisterAlert = 'success';
+                this.alertRegistroMsg = "Usuario Agregado";
                 this.alertRegistroShow = true;
+                this.$emit('click');
                 this.$refs.form.reset();
                 setTimeout(()=>{
                 this.alertRegistroShow = false;
@@ -190,20 +186,6 @@ export default {
                 this.text = true;
                 },3000)
               })
-              .catch((error)=> {
-                this.loader = null  
-                this.loading = false;
-                console.log(error);
-                this.iconCancel = true
-                this.alertRegistroMsg = error.message;
-                this.statusRegisterAlert = 'error';
-                this.alertRegistroShow = true
-                setTimeout(()=>{
-                this.alertRegistroShow = false;
-                this.iconCancel = false;
-                this.text = true;
-                },5000)
-              });
             }
           }catch (error) {
             console.log(error);
@@ -229,14 +211,13 @@ export default {
             await axios.get('companyName',{
             })
             .then((res)=>{
-              for (const item of res.data.data) {
-                this.empresas.push(item.name);
-              }
+              //console.log('company Sec:', res.data.data)
+              this.empresas =  res.data.data;
             })
           } catch (error) {
             console.log(error);
           }
-        }
+        },
     },
     mounted(){
       this.getCompanies();
