@@ -102,7 +102,9 @@ class UserController {
       if(validationUser != null){
         delete validationUser.password
       }
-      const token = await auth.attempt(email , password);
+      const token = await auth.attempt(email , password , { expiresIn:'1m'});
+      const auth1 = await auth.withRefreshToken().attempt(email , password)
+      console.log(auth1)
       const resCustom = new Response(true, 'Logueado con exito', token.token)
       resCustom.data = validationUser
       response.status(200).json(resCustom);
