@@ -46,6 +46,9 @@ Route.post("api/v1/company" ,  "CompanyController.store");
 Route.put("api/v1/company/:id" ,  "CompanyController.update");
 Route.delete("api/v1/company/:id" ,  "CompanyController.destroy");
 
+//OT 
+Route.get("api/v1/ot" ,  "OTController.index");
+Route.post("api/v1/ot" ,  "OTController.store");
 //sector
 Route.post("api/v1/sector" ,  "SectionController.store");
 Route.get("api/v1/sector/:id" ,  "SectionController.show"); //params id es el id de la company

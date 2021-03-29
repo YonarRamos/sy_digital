@@ -30,8 +30,44 @@ create table company(
     name varchar(30) NOT NULL,
     description varchar(50),
     PRIMARY KEY (id),
-   
     
+);
+/* base de datos OT*/
+create table ot(
+ id uuid DEFAULT uuid_generate_v4();
+ solicitante varchar(30) NOT NULL,
+ ejecutor varchar(30) NOT NULL,
+ ingreso varchar(30) NOT NULL,
+ sector_id smallint NOT NULL,
+ line_id smallint NOT NULL,
+ machine_id smallint NOT NULL,
+ grupo varchar(30) NOT NULL,
+ status_id smallint NOT NULL,
+ company_id smallint NOT NULL,
+ PRIMARY KEY (id),
+ FOREIGN KEY (sector_id) REFERENCES sector (id),
+ FOREIGN KEY (company_id) REFERENCES company (id),
+ FOREIGN KEY(status_id) REFERENCES status_o_t (id),
+ FOREIGN KEY (line_id) REFERENCES line (id),
+ FOREIGN KEY (machine_id) REFERENCES machine (id)
+);
+create table observations(
+  id smallserial NOT NULL,
+  sections varchar(50),
+  title varchar(50),
+  real bit ,
+  estado bit,
+  observations varchar(100),
+  img varchar,
+  id_ot uuid NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (id_ot) REFERENCES ot (id)
+)
+create table calendar(
+    id_ot uuid DEFAULT uuid_generate_v4();
+    create_date timestamp NOT NULL,
+    FOREIGN KEY (id_ot) REFERENCES OT (id)
+
 );
 /* base de datos Line*/
 create table line(
@@ -103,12 +139,6 @@ create table old_machine(
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
-/* Base de datos task */
- create table task(
-    id smallserial NOT NULL , 
-    type_task varchar(30) NOT NULL,
-    PRIMARY KEY(id)
-);
 
 /* Base de datos Estado de OT*/
 create table status_o_t(
@@ -116,12 +146,3 @@ create table status_o_t(
     type varchar(50) NOT NULL,
     PRIMARY KEY (id)
 );    
-
-/* Basde de datos Tabla pivot*/
-
-create table company_line(
-    company_id smallint NOT NULL,
-    line_id smallint NOT NULL,
-    FOREIGN KEY (company_id) REFERENCES company (id),
-    FOREIGN KEY (line_id) REFERENCES line (id)
-)
