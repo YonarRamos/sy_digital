@@ -3,7 +3,7 @@
 const Response = use('App/Models/Response');
 const { validate } = use('Validator');
 const Machine = use("App/Models/Machine");
-
+const Calendar = use("App/Models/Calendar");
 const Observation = use("App/Models/Observation");
 const Line = use("App/Models/Line");
 const OT = use("App/Models/OT");
@@ -90,7 +90,7 @@ class OTController {
    */
   async store({ request, response, auth }) {
     try {
-      let { solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, company_id, observations } = request.all();
+      let { solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, company_id, observations , fechas} = request.all();
       console.log(observations)
       const rules = {
         solicitante: 'required',
@@ -132,6 +132,15 @@ class OTController {
       })
       const resp = await Promise.all(arrPromisesObsertions)
       await Observation.query().insert(resp);
+      var arrPromisesFechas = fechas.map(i =>{
+        return {
+          id_ot : ot.id,
+          create_date : i.fecha,
+
+        }
+      })
+      const resp1 = await Promise.all(arrPromisesFechas)
+      await Calendar.query().insert(resp1)
       return response.status(200).json({ message: "OT creado con exito!", data: ot })
     } catch (error) {
       console.log(error)

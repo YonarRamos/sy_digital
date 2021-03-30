@@ -19,7 +19,8 @@ const Route = use('Route')
 Route.get('/api/v1', () => {
   return { greeting: 'Welcome API OT-SOf - Systelec S.A' }
 })
-
+//calendar 
+Route.get("api/v1/calendar" ,  "CalendarController.index");
 //users
 Route.post("api/v1/register" ,  "UserController.store");
 Route.post("api/v1/login", "UserController.login");
