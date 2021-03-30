@@ -6,7 +6,7 @@ var moment = require('moment');
 const Database = use("Database");
 class CalendarController {
 
-  async index ({ request, response, auth }) {
+  async index({ request, response, auth }) {
     try {
       const user = await auth.getUser();
       var query = Calendar.query();
@@ -17,9 +17,44 @@ class CalendarController {
       //seteo valores por defectos
       page = page || 1
       perPage = perPage || 10
-      const calendar = await query
-      .with('ot')
-      .with('ot.sector').paginate(page, perPage);
+      let calendar = await query
+        .with('ot')
+        .with('ot.sector')
+        .with('ot.machine')
+        .with('ot.line')
+        .with('ot.status')
+        .with('ot.company')
+        .with('ot.observation').paginate(page, perPage);
+      calendar = calendar.toJSON();
+      var arrPromisesCalendar = calendar.data.map(item => {
+        return {
+          "fecha": {
+            "create_date": item.create_date,
+          },"data":{
+            "id": item.ot.id,
+            "solicitante": item.ot.solicitante,
+            "ejecutor": item.ot.ejecutor,
+            "ingreso": item.ot.ingreso,
+            "line": item.ot.line.name,
+            "sector": item.ot.sector.name,
+            "machine": item.ot.machine.name,
+            "grupo": item.grupo,
+            "status": item.ot.status.type,
+            "company": item.ot.company.name,
+          }, "observations": item.ot.observation.map(e => {
+            return {
+              "sections": e.sections,
+              "title": e.title,
+              "real": e.real,
+              "estado": e.estado,
+              "observations": e.observations,
+              "img": e.img
+            }
+          })
+        }
+        })
+        let resp = await Promise.all(arrPromisesCalendar)
+        calendar.data = resp
       response.status(200).json({ message: 'Listado de Fechas OT', data: calendar })
     } catch (error) {
       console.log(error)
@@ -39,7 +74,7 @@ class CalendarController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create ({ request, response, view }) {
+  async create({ request, response, view }) {
   }
 
   /**
@@ -50,7 +85,7 @@ class CalendarController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response }) {
   }
 
   /**
@@ -62,7 +97,7 @@ class CalendarController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params, request, response, view }) {
   }
 
   /**
@@ -74,7 +109,7 @@ class CalendarController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async edit ({ params, request, response, view }) {
+  async edit({ params, request, response, view }) {
   }
 
   /**
@@ -85,7 +120,7 @@ class CalendarController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response }) {
   }
 
   /**
@@ -96,7 +131,7 @@ class CalendarController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, request, response }) {
   }
 }
 

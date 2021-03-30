@@ -22,7 +22,7 @@ class Calendar extends Model {
       
     static castDates(field, value) {
         if (field === 'create_date') {
-          return value.format('DD/MM/YYYY hh:mm:ss')
+          return value.format('DD/MM/YYYY HH:mm:ss')
         }
     }
 }
