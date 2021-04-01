@@ -122,6 +122,7 @@ export default {
         ['Lineas', 'leaderboard', '/opciones'],
         ['Máquinas', 'build', '/opciones'],
         ['Usuarios', 'people_alt', '/opciones'],
+        ['Programas', 'widgets', '/programas'],
       ],
       clipped: true,
       drawer: false,
@@ -154,7 +155,6 @@ export default {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((res) => {
-            console.log('default:', res.data.data)
             this.clientes = res.data.data
           })
       } catch (error) {

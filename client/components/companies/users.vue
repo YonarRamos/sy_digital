@@ -50,7 +50,6 @@
 <script>
 import axios from '@/plugins/axios';
 import Cookies from "js-cookie";
-import { mapState } from "vuex";
 
 import Add from '~/components/users/AddUser';
 import Edit from '~/components/users/EditUser';

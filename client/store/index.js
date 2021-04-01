@@ -8,6 +8,7 @@ export const state = () => ({
   user:{
     username:'',
     company:'',
+    company_id:"",
     rol:null
   },
   infoModal:{
@@ -17,7 +18,7 @@ export const state = () => ({
     alertType: "",
   },
   dialogPassword: false,
-  ots:[],
+  ot:[],
   clienteID: null,
   clienteName: '',
   indexTab:'tab-1'

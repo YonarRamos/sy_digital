@@ -122,8 +122,8 @@ export default {
             empresas:['Systelec', 'Softys','Jhonson'],
             valid:true,
             rules: {
-                    required: v => !!v || "Este campo es obligatorio"
-                    },
+              required: v => !!v || "Este campo es obligatorio"
+            },
         }
     },
     computed:{

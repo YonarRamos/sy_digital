@@ -42,7 +42,7 @@ export default {
         {titulo:'O.T', icon:'fact_check', url:'/ot'},
         {titulo:'Consultas', icon:'build'},
         {titulo:'Acciones', icon:'search'},
-        {titulo:'Acciones', icon:'widgets'}
+        {titulo:'Programas', icon:'widgets', url:'/programas'}
       ],
     }
   },
