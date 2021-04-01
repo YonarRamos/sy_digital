@@ -55,7 +55,29 @@ class MachineController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create({ request, response, view }) {
+  async getMachine({ request, response, auth }) {
+    try {
+      const user = await auth.getUser();
+      var query = Machine.query();
+     
+      let mac = await Machine.query().where('company_id' , user.company_id).fetch();
+      mac = mac.toJSON();
+     var arrLinea = mac.map(e=>{
+        return{
+          "id": e.id,
+          "name": e.name,
+          
+        }
+      })
+      let resp = await Promise.all(arrLinea)
+      response.status(200).json({ message: 'Listado de Machine', data: resp })
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
+    }  
   }
 
   /**

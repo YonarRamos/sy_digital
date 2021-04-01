@@ -11,16 +11,20 @@ class LineController {
     try {
       const user = await auth.getUser();
       var query = Line.query();
-      var {
-        page,
-        perPage,
-      } = request.all();
-      //seteo valores por defectos
-      page = page || 1
-      perPage = perPage || 10
-      const linea = await Line.query().with('machine').paginate(page, perPage);
-      response.status(200).json({ message: 'Listado de Linea', data: linea })
+     
+      let linea = await Line.query().where('company_id' , user.company_id).fetch();
+      linea = linea.toJSON();
+     var arrLinea = linea.map(e=>{
+        return{
+          "id": e.id,
+          "name": e.name,
+          
+        }
+      })
+      let resp = await Promise.all(arrLinea)
+      response.status(200).json({ message: 'Listado de Linea', data: resp })
     } catch (error) {
+      console.log(error)
       if (error.name == 'InvalidJwtToken') {
         return response.status(400).json({ menssage: 'Usuario no Valido' })
       }
@@ -31,6 +35,7 @@ class LineController {
     try {
       var company_id = params.id
       const user = await auth.getUser();
+      console.log(user.company_id)
       let linea = await Line.query().where('company_id' , company_id).fetch();
       linea = linea.toJSON();
      var arrLinea = linea.map(e=>{
