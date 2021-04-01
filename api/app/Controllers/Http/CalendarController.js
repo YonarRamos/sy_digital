@@ -23,6 +23,7 @@ class CalendarController {
         .with('ot.machine')
         .with('ot.line')
         .with('ot.status')
+        .with('ot.task')
         .with('ot.company')
         .with('ot.observation')
         .with('ot.calendar').paginate(page, perPage);
@@ -35,6 +36,7 @@ class CalendarController {
             "ingreso": item.ot.ingreso,
             "line": item.ot.line.name,
             "sector": item.ot.sector.name,
+            "task": item.ot.task.type_task,
             "machine": item.ot.machine.name,
             "grupo": item.ot.grupo,
             "status": item.ot.status.type,
