@@ -179,6 +179,7 @@ class OTController {
       .with('line')
       .with('status')
       .with('company')
+      .with('task')
       .with('observation').fetch();
       ot = ot.toJSON();
       var arrPromisesOT = ot.map(e => {
@@ -190,6 +191,7 @@ class OTController {
             "ingreso": e.ingreso,
             "sector": e.sector.name,
             "line": e.line.name,
+            "task": e.task.type_task,
             "machine": e.machine.name,
             "grupo": e.grupo,
             "status": e.status.type,
