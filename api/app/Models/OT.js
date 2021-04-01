@@ -28,8 +28,14 @@ class OT extends Model {
     status () {
         return this.belongsTo('App/Models/StatusOt', 'status_id')
     }
+    task () {
+        return this.belongsTo('App/Models/Task', 'type_task_id')
+    }
     observation () {
         return this.hasMany('App/Models/Observation', 'id' , 'id_ot')
+    }
+    calendar () {
+        return this.hasMany('App/Models/Calendar', 'id' , 'id_ot')
     }
 }
 

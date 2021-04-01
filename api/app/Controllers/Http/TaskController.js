@@ -1,23 +1,28 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
-/**
- * Resourceful controller for interacting with tasks
- */
+const { validate } = use('Validator');
+const Task = use("App/Models/Task");
 class TaskController {
-  /**
-   * Show a list of all tasks.
-   * GET tasks
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+
+  async index ({ request, response, auth }) {
+    try {
+      const user = await auth.getUser();
+      var query = Task.query();
+      var {
+        page,
+        perPage,
+      } = request.all();
+      //seteo valores por defectos
+      page = page || 1
+      perPage = perPage || 10
+      const task = await Task.query().paginate(page, perPage);
+      response.status(200).json({ message: 'Listado de Linea', data: task })
+    } catch (error) {
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
+    }  
   }
 
   /**

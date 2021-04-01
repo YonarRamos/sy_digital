@@ -21,6 +21,8 @@ Route.get('/api/v1', () => {
 })
 //calendar 
 Route.get("api/v1/calendar" ,  "CalendarController.index");
+
+
 //users
 Route.post("api/v1/register" ,  "UserController.store");
 Route.post("api/v1/login", "UserController.login");
@@ -49,10 +51,15 @@ Route.delete("api/v1/company/:id" ,  "CompanyController.destroy");
 
 //OT 
 Route.get("api/v1/ot" ,  "OTController.index");
+Route.get("api/v1/ot/:id" ,  "OTController.show");
 Route.post("api/v1/ot" ,  "OTController.store");
 //sector
 Route.post("api/v1/sector" ,  "SectionController.store");
 Route.get("api/v1/sector/:id" ,  "SectionController.show"); //params id es el id de la company
 
+
+//task
+
+Route.get("api/v1/task" ,  "TaskController.index");
 //prueba de mail
 Route.post("api/v1/email" ,  "MailController.index");

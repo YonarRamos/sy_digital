@@ -24,13 +24,11 @@ class CalendarController {
         .with('ot.line')
         .with('ot.status')
         .with('ot.company')
-        .with('ot.observation').paginate(page, perPage);
+        .with('ot.observation')
+        .with('ot.calendar').paginate(page, perPage);
       calendar = calendar.toJSON();
       var arrPromisesCalendar = calendar.data.map(item => {
         return {
-          "fecha": {
-            "create_date": item.create_date,
-          },"data":{
             "id": item.ot.id,
             "solicitante": item.ot.solicitante,
             "ejecutor": item.ot.ejecutor,
@@ -38,10 +36,10 @@ class CalendarController {
             "line": item.ot.line.name,
             "sector": item.ot.sector.name,
             "machine": item.ot.machine.name,
-            "grupo": item.grupo,
+            "grupo": item.ot.grupo,
             "status": item.ot.status.type,
             "company": item.ot.company.name,
-          }, "observations": item.ot.observation.map(e => {
+           "observations": item.ot.observation.map(e => {
             return {
               "sections": e.sections,
               "title": e.title,
@@ -50,8 +48,14 @@ class CalendarController {
               "observations": e.observations,
               "img": e.img
             }
+          }),
+          "fechas": item.ot.calendar.map(i =>{
+            return{
+              "fecha": i.create_date
+            }
           })
-        }
+        
+       }
         })
         let resp = await Promise.all(arrPromisesCalendar)
         calendar.data = resp

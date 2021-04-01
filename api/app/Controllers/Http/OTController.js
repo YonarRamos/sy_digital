@@ -9,6 +9,7 @@ const Line = use("App/Models/Line");
 const OT = use("App/Models/OT");
 var moment = require('moment');
 const Database = use("Database");
+const Helpers = use('Helpers');
 class OTController {
   async index({ request, response, auth }) {
     try {
@@ -27,6 +28,7 @@ class OTController {
         .with('line')
         .with('status')
         .with('company')
+        .with('task')
         .with('observation')
         .paginate(page, perPage);
       ot = ot.toJSON();
@@ -40,6 +42,7 @@ class OTController {
             "sector": e.sector.name,
             "line": e.line.name,
             "machine": e.machine.name,
+            "task": e.task.type_task,
             "grupo": e.grupo,
             "status": e.status.type,
             "company": e.company.name,
@@ -90,8 +93,12 @@ class OTController {
    */
   async store({ request, response, auth }) {
     try {
-      let { solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, company_id, observations , fechas} = request.all();
-      console.log(observations)
+      let { solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, type_task_id, company_id, observation , fechas} = request.all();
+     //console.log( observation , fechas)
+     /*const img = request.file('img', {
+        types: ['image'],
+        size: '2mb'
+      })*/
       const rules = {
         solicitante: 'required',
         ejecutor: 'required',
@@ -101,13 +108,15 @@ class OTController {
         machine_id: 'required',
         grupo: 'required',
         status_id: 'required',
-        company_id: 'required'
+        company_id: 'required',
+        type_task_id : 'required'
       }
 
-      let validation = await validate({ solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, company_id }, rules);
+      let validation = await validate({ solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, company_id , type_task_id}, rules);
       if (validation.fails()) {
         return response.status(200).json({ message: "Datos Insufiente" });
       }
+    
       const ot = await OT.create({
         solicitante,
         ejecutor,
@@ -117,22 +126,34 @@ class OTController {
         machine_id,
         grupo,
         status_id,
-        company_id
+        company_id,
+        type_task_id
       })
-      var arrPromisesObsertions = observations.map(e => {
+     /* await img.move(Helpers.appRoot(`uploads/${ot.id}`), {
+        name: `${ot.id}.jpg`,
+        overwrite: true
+      })
+      if (!img.moved()) {
+        throw "No se pudo guardar la img."
+      }*/
+      //console.log(observation)
+      var arrPromisesObsertions = observation.map(e => {
+        //console.log(e)
         return {
           sections: e.sections,
           title: e.title,
           real: e.real,
           estado: e.estado,
           observations: e.observations,
-          img: e.img,
+          img: ot.id+'.jpg',
           id_ot: ot.id
         }
       })
       const resp = await Promise.all(arrPromisesObsertions)
       await Observation.query().insert(resp);
+     // console.log(fechas)
       var arrPromisesFechas = fechas.map(i =>{
+       // console.log(i.fecha)
         return {
           id_ot : ot.id,
           create_date : i.fecha,
@@ -149,16 +170,56 @@ class OTController {
     }
   }
 
-  /**
-   * Display a single ot.
-   * GET ots/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show({ params, request, response, view }) {
+
+  async show({ params :{id}, request, response, auth }) {
+    try {
+      const user = await auth.getUser();
+      let ot = await OT.query().where('id', id).with('sector')
+      .with('machine')
+      .with('line')
+      .with('status')
+      .with('company')
+      .with('observation').fetch();
+      ot = ot.toJSON();
+      var arrPromisesOT = ot.map(e => {
+        return {
+          'OT': {
+            "id": e.id,
+            "solicitante": e.solicitante,
+            "ejecutor": e.ejecutor,
+            "ingreso": e.ingreso,
+            "sector": e.sector.name,
+            "line": e.line.name,
+            "machine": e.machine.name,
+            "grupo": e.grupo,
+            "status": e.status.type,
+            "company": e.company.name,
+          }, 'Observations': e.observation.map(i => {
+            return {
+              "sections": i.sections,
+              "title": i.title,
+              "real": i.real,
+              "estado": i.estado,
+              "observations": i.observations,
+              "img": i.img
+            }
+          })
+
+        }
+      })
+      let resp = await Promise.all(arrPromisesOT)
+      ot = resp
+      return response.status(200).json({ menssage: 'OT', data: ot });
+    }catch(error){
+      console.log(error)
+      if(error.name == 'InvalidJwtToken'){
+        return response.status(200).json({menssage: 'Usuario no Valido'})
+       }
+      return response.status(500).json({
+        menssage: 'OT no encontrado',
+        id
+      })
+    }
   }
 
   /**
