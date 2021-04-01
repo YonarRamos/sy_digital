@@ -7,6 +7,12 @@ class Observation extends Model {
     static get table () {
         return 'observations';
       }
+      static get createdAtColumn() {
+        return null;
+    }
+    static get updatedAtColumn() {
+        return null;
+    }
 }
 
 module.exports = Observation

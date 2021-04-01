@@ -41,6 +41,7 @@ create table ot(
  sector_id smallint NOT NULL,
  line_id smallint NOT NULL,
  machine_id smallint NOT NULL,
+ type_task_id smallint NOT NULL,
  grupo varchar(30) NOT NULL,
  status_id smallint NOT NULL,
  company_id smallint NOT NULL,
@@ -48,6 +49,7 @@ create table ot(
  FOREIGN KEY (sector_id) REFERENCES sector (id),
  FOREIGN KEY (company_id) REFERENCES company (id),
  FOREIGN KEY(status_id) REFERENCES status_o_t (id),
+ FOREIGN KEY (type_task_id) REFERENCES task (id),
  FOREIGN KEY (line_id) REFERENCES line (id),
  FOREIGN KEY (machine_id) REFERENCES machine (id)
 );
@@ -55,8 +57,8 @@ create table observations(
   id smallserial NOT NULL,
   sections varchar(50),
   title varchar(50),
-  real bit ,
-  estado bit,
+  real boolean ,
+  estado varchar(10),
   observations varchar(100),
   img varchar,
   id_ot uuid NOT NULL,
@@ -146,3 +148,10 @@ create table status_o_t(
     type varchar(50) NOT NULL,
     PRIMARY KEY (id)
 );    
+
+/* base de datos Tipo de tarea*/
+create table task(
+    id smallint,
+    type_task varchar(20),
+    PRIMARY KEY (id)
+)
