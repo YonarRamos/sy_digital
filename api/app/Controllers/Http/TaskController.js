@@ -7,17 +7,11 @@ class TaskController {
   async index ({ request, response, auth }) {
     try {
       const user = await auth.getUser();
-      var query = Task.query();
-      var {
-        page,
-        perPage,
-      } = request.all();
-      //seteo valores por defectos
-      page = page || 1
-      perPage = perPage || 10
-      const task = await Task.query().paginate(page, perPage);
+     
+      const task = await Task.query().fetch();
       response.status(200).json({ message: 'Listado de Linea', data: task })
     } catch (error) {
+      console.log(error)
       if (error.name == 'InvalidJwtToken') {
         return response.status(400).json({ menssage: 'Usuario no Valido' })
       }

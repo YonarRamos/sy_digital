@@ -1,12 +1,10 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
-/**
- * Resourceful controller for interacting with statusots
- */
+const Response = use('App/Models/Response');
+const { validate } = use('Validator');
+const StatusOt = use("App/Models/StatusOt");
+var moment = require('moment');
+const Database = use("Database");
 class StatusOtController {
   /**
    * Show a list of all statusots.
@@ -17,7 +15,21 @@ class StatusOtController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async getOTStatus ({ request, response, auth }) {
+    try {
+      const user = await auth.getUser();
+      var query = StatusOt.query();
+     
+      let status = await StatusOt.query().fetch();
+     
+      response.status(200).json({ message: 'Listado de Status', data: status })
+    } catch (error) {
+      console.log(error)
+      if (error.name == 'InvalidJwtToken') {
+        return response.status(400).json({ menssage: 'Usuario no Valido' })
+      }
+      return response.status(400).json({ menssage: 'Hubo un error al realizar la operación', error })
+    }  
   }
 
   /**

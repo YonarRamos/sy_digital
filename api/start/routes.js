@@ -33,10 +33,13 @@ Route.get("api/v1/loginUsersAutomatico", "UserController.loginToken");
 
 //lineas
 Route.post("api/v1/line" ,  "LineController.store");
+
+Route.get("api/v1/line" ,  "LineController.index");
 Route.get("api/v1/line/:id", "LineController.indexFox"); //params id es el id de la company
 
 //Maquinas
 Route.get("api/v1/machine/:id" ,  "MachineController.index"); //busco maquina por compañia
+Route.get("api/v1/machine" ,  "MachineController.getMachine");
 Route.post("api/v1/machine" ,  "MachineController.store");
 Route.get("api/v1/statusMachine" ,  "StatusMachineController.index");
 
@@ -56,10 +59,13 @@ Route.post("api/v1/ot" ,  "OTController.store");
 //sector
 Route.post("api/v1/sector" ,  "SectionController.store");
 Route.get("api/v1/sector/:id" ,  "SectionController.show"); //params id es el id de la company
+Route.get("api/v1/sector" ,  "SectionController.getSector")
 
+
+//status OT
+Route.get("api/v1/OTstatus" ,  "StatusOtController.getOTStatus")
 
 //task
-
 Route.get("api/v1/task" ,  "TaskController.index");
 //prueba de mail
 Route.post("api/v1/email" ,  "MailController.index");
