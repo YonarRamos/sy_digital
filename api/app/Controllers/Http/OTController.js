@@ -94,11 +94,20 @@ class OTController {
   async store({ request, response, auth }) {
     try {
       let { solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, type_task_id, company_id, observation , fechas} = request.all();
-     //console.log( observation , fechas)
-     /*const img = request.file('img', {
-        types: ['image'],
-        size: '2mb'
-      })*/
+     //console.log( solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, type_task_id, company_id, observation , fechas)
+     //console.log(observation)
+     //var observationJSON = JSON.parse(observation);
+      observation.forEach(element => {
+        console.log(element)
+       element.img = request.file('img', {
+          types: ['image' , 'png', 'jpeg'],
+          size: '4mb'
+        })
+        console.log(element.img)
+      });
+      
+      return observation
+     // var  observationJSON = JSON.parse(observation)
       const rules = {
         solicitante: 'required',
         ejecutor: 'required',
@@ -129,14 +138,20 @@ class OTController {
         company_id,
         type_task_id
       })
-     /* await img.move(Helpers.appRoot(`uploads/${ot.id}`), {
-        name: `${ot.id}.jpg`,
-        overwrite: true
-      })
-      if (!img.moved()) {
-        throw "No se pudo guardar la img."
-      }*/
-      //console.log(observation)
+      //console.log(img._files)
+     
+      img._files.forEach( async(item) => {
+        await item.move(Helpers.appRoot(`uploads/${ot.id}`), {
+          name: item.clientName,
+          overwrite: true
+        })
+        if (!item.moved()) {
+          throw "No se pudo guardar la img."
+        }  
+      });
+       
+     //var fechasJSON = JSON.parse(fechas);
+     console.log(observation)
       var arrPromisesObsertions = observation.map(e => {
         //console.log(e)
         return {
@@ -153,7 +168,7 @@ class OTController {
       await Observation.query().insert(resp);
      // console.log(fechas)
       var arrPromisesFechas = fechas.map(i =>{
-       // console.log(i.fecha)
+        //console.log(i.fecha)
         return {
           id_ot : ot.id,
           create_date : i.fecha,
