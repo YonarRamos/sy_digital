@@ -1,55 +1,75 @@
 <template>
-  <v-container>
-      <v-row align="center">
-          <v-col align-self="center">
-            <v-icon @click="overlay = true">visibility</v-icon>
-            <v-overlay :value="overlay" @click="overlay = false">
-                <v-icon @click="overlay = false">visibility_off</v-icon>
-            <v-carousel class="d-flex justify-center" height="auto">
-                <v-carousel-item
-                v-for="(item, i) in items"
-                :key="i"
-                >
-                <v-container>
-                    <v-col align-self="center">          
-                        <img class="img" :src="item.src" />
-                    </v-col>            
-                </v-container>
-                </v-carousel-item>
-            </v-carousel>
-            </v-overlay>
-          </v-col>
-      </v-row>
-  </v-container>
+  <v-col align-self="center" class="py-0">
+    <v-icon color="white" large @click="show">visibility</v-icon>
+    <v-overlay v-model="overlay" @click="overlay = false">
+        <v-col class="d-flex justify-end pa-0">
+          <v-icon large @click="overlay = false" >visibility_off</v-icon>
+        </v-col> 
+    <v-carousel class="d-flex justify-center"  height="auto" style="padding-bottom:50px;">
+        <v-carousel-item
+        v-for="(n,i) in previews"
+        :key="i"
+        >
+          <v-container class="pa-0">
+              <v-col align-self="center" class="pa-0">          
+                  <img class="img" :src="n.path" />
+              </v-col>            
+          </v-container>
+        </v-carousel-item>
+    </v-carousel>
+    </v-overlay>
+  </v-col>
 </template>
 
 <script>
 export default {
+  props:{
+    items:{
+      type: Array,
+      required: true
+    }
+  },
   data: () => ({
     overlay: false,
     model: 0,
-    items: [
-      {
-        src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
-      },
-      {
-        src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-      },
-      {
-        src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-      },
-      {
-        src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-      },
-    ],
+    previews:[]
   }),
+  methods:{
+      onAddFiles(files) {
+      this.previews = [];
+      files.forEach((file, index) => {
+        const reader = new FileReader()
+        reader.addEventListener('load', (e) => {
+          this.previews.push({
+            name: `archivo ${index}`,
+            path: reader.result.toString(),
+          })
+        })
+        reader.addEventListener(
+          'error',
+          (e) => (this.previews[index] = this.errorImage)
+        )
+        reader.readAsDataURL(file)
+      })
+    },
+    show(){
+      this.overlay = true;
+      this.onAddFiles(this.items);
+    },
+  }
 }
 </script>
 
-<style>
+<style scoped>
     .img{
         display: block;
-        width: 100%;
+        width: 800px;
         height: auto;
+        max-height: 500px;
+    }
+    @media (max-width: 600px) {
+      .img {
+        width: 100%;
+      }
     }
 </style>

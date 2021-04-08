@@ -117,6 +117,7 @@ export default {
   },
   data() {
     return {
+      company_type:0,
       clientes: [],
       opciones: [
         ['Lineas', 'leaderboard', '/opciones'],
@@ -155,7 +156,13 @@ export default {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((res) => {
-            this.clientes = res.data.data
+            if(this.user.company_type == 0){
+              this.clientes = res.data.data;
+              this.clientes = this.clientes.filter(obj => obj.id==this.user.company_id);
+              console.log('company ID:', this.clientes);
+            }else if(this.user.company_type == 1){
+              this.clientes = res.data.data;
+            }
           })
       } catch (error) {
         console.log(error)

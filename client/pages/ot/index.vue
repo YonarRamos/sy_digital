@@ -120,7 +120,7 @@
           >
             <v-card color="grey lighten-4" min-width="350px" flat>
               <v-toolbar :color="selectedEvent.color" dark>
-                <v-btn icon  :to="`ot/editar-ot/${selectedEvent.index}`">
+                <v-btn icon  :to="`ot/editar-ot/${selectedEvent.name}`">
                   <v-icon >mdi-pencil</v-icon>
                 </v-btn>
                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
@@ -255,25 +255,27 @@ export default {
       //const eventCount = this.rnd(days, days + 20)
 
       for (let [i, item] of this.ots.entries()) {
-        events.push({
-          name: item.data.id,
-          start: item.fecha.create_date,
-          end: item.fecha.create_date,
-          color: this.colors[this.rnd(0, this.colors.length - 1)], 
-          details:`        
-          <strong>Estatus:</strong> ${item.data.status}<br>  
-          <strong>Sector:</strong> ${item.data.sector}<br>
-          <strong>Linea:</strong> ${item.data.line}<br>
-          <strong>Maquina:</strong> ${item.data.machine}<br>
-          <strong>Grupo:</strong> ${item.data.grupo}<br>
-          <strong>Tarea:</strong> ${item.data.tarea}<br>
-          <strong>Fecha de solicitud:</strong> ${item.fecha.create_date}<br>
-          <strong>Solicitante:</strong> ${item.data.solicitante}<br>
-          <strong>Ejecucion:</strong> ${item.data.ejecutor}<br>
-          <strong>Modo de Ingreso:</strong> ${item.data.ingreso}<br>
-          `,
-          index: i
-        });
+        for (const date of item.fechas) {
+          events.push({
+            name: item.id,
+            start: date.fecha,
+            end: date.fecha,
+            color: this.colors[this.rnd(0, this.colors.length - 1)], 
+            details:`        
+            <strong>Estatus:</strong> ${item.status}<br>  
+            <strong>Sector:</strong> ${item.sector}<br>
+            <strong>Linea:</strong> ${item.line}<br>
+            <strong>Maquina:</strong> ${item.machine}<br>
+            <strong>Grupo:</strong> ${item.grupo}<br>
+            <strong>Tarea:</strong> ${item.task}<br>
+            <strong>Fecha de solicitud:</strong> ${date.fecha}<br>
+            <strong>Solicitante:</strong> ${item.solicitante}<br>
+            <strong>Ejecucion:</strong> ${item.ejecutor}<br>
+            <strong>Modo de Ingreso:</strong> ${item.ingreso}<br>
+            `,
+            index: i
+          });        
+        }
       }
       this.events = events;
     },

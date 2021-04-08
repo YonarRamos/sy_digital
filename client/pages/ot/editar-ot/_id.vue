@@ -14,7 +14,6 @@
       </div>
     </v-dialog>
     <v-container>
-      {{paramsID}}
       <v-row>
         <v-col cols="12">
           <v-card>
@@ -38,8 +37,11 @@
                 <v-col cols="12" md="6" class="py-0">
                   <v-col class="px-0">
                     <v-autocomplete
-                      v-model="datosOT.status_id"
-                      :items="items"
+                      v-model="datosOT.status"
+                      :items="[{'id':1,'name':'aceptada'},{'id':2,'name':'pendiente'},{'id':3,'name':'realizada'}]"
+                      item-text="name"
+                      item-value="name"
+                      return-object
                       label="Estatus"
                       outlined
                       dense
@@ -51,8 +53,11 @@
                   </v-col>
                   <v-col class="px-0">
                     <v-autocomplete
-                      v-model="datosOT.linea_id"
-                      :items="items"
+                      v-model="datosOT.line"
+                      :items="[{'id':1,'name':'linea nueva sysa'},{'id':2,'name':'linea de pruebas'}]"
+                      item-text="name"
+                      item-value="name"
+                      return-object
                       label="Linea"
                       outlined
                       dense
@@ -99,8 +104,11 @@
 
                 <v-col cols="12" md="6">
                   <v-autocomplete
-                    v-model="datosOT.machine_id"
-                    :items="items"
+                    v-model="datosOT.machine"
+                    :items="[{'id':1,'name':'maquina L100'},{'id':2,'name':'maquina L200'}]"
+                    item-text="name"
+                    item-value="name"
+                    return-object
                     label="Máquina"
                     outlined
                     dense
@@ -111,8 +119,11 @@
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-autocomplete
-                    v-model="datosOT.serie"
-                    :items="items"
+                    v-model="datosOT.sector"
+                    :items="[{'id':1,'name':'Taller Sysa'},{'id':2,'name':'Sector de pruebas'}]"
+                    item-text="name"
+                    item-value="name"
+                    return-object
                     label="Sector"
                     outlined
                     dense
@@ -157,8 +168,11 @@
 
                 <v-col cols="12" md="6">
                   <v-autocomplete
-                    v-model="datosOT.tarea"
-                    :items="['M.M.', 'M.E.']"
+                    v-model="datosOT.task"
+                    :items="[{'id':1,'name':'M.M'},{'id':2,'name':'M.E'}]"
+                    item-text="name"
+                    item-value="name"
+                    return-object
                     label="Tarea"
                     outlined
                     dense
@@ -171,7 +185,10 @@
                 <v-col cols="12" md="6">
                   <v-autocomplete
                     v-model="datosOT.ingreso"
-                    :items="['Modo 1', 'Modo 2']"
+                    :items="[{'id':1,'name':'Modo 1'},{'id':2,'name':'Modo 2'}]"
+                    item-text="name"
+                    item-value="name"
+                    return-object
                     label="Modo Ingreso"
                     outlined
                     dense
@@ -294,7 +311,7 @@ export default {
     BtnPDF,
     InfoModal,
   },
-  data(vm) {
+  data() {
     return {
       paramsID:null,
       arrayOT: [],
@@ -315,13 +332,14 @@ export default {
       items: [1, 2, 3, 4, 5],
       f_solicitud: new Date().toISOString().substr(0, 10),
       datosOT: {
-        solicitante: 'julio',
-        ejecutor: 'systelec',
+        solicitante: '',
+        ejecutor: '',
         ingreso: null,
-        sector_id: 1,
-        line_id: 1,
-        machine_id: 1,
-        grupo: 'pruebaOT',
+        sector: null,
+        line: null,
+        machine: 1,
+        grupo: '',
+        task:'',
         status_id: 1,
         company_id: null,
         observations: [],
@@ -344,8 +362,8 @@ export default {
   },
   mounted() {
     this.showBar = false;
-    this.getOts();
     this.paramsID = this.$route.params.id;
+    this.getOts();
   },
   methods: {
     ...mapMutations(['toggleInfoModal', 'ocultarInfoModal', 'cargarOTS']),
@@ -412,13 +430,13 @@ export default {
     },
     async getOts(){
       let token = Cookies.get('token');
-      await axios.get('calendar',
+      await axios.get(`ot/${this.paramsID}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res)=>{
-        console.log('ots:', res.data.data.data[this.paramsID].data);
-        this.datosOT = res.data.data.data[this.paramsID].data;
+        console.log('ots:', res.data.data[0].OT);
+        this.datosOT = res.data.data[0].OT;
       });
     },
     async guardarOT() {
@@ -434,47 +452,36 @@ export default {
             this.datosOT.id = `OT_0${this.ots.length + 1}_ME_AR-${moment(
               this.datosOT.f_solicitud
             )}`
-            /*             this.cargarOTS({
-                solicitante: this.datosOT.solicitante,
-                ejecutor: this.datosOT.ejecutor,
-                ingreso: this.datosOT.ingreso,
-                sector_id: this.datosOT.sector_id,
-                line_id: this.datosOT.line_id,
-                machine_id: this.datosOT.machine_id,
-                grupo: this.datosOT.grupo,
-                status_id: this.datosOT.status_id,
-                company_id: this.user.company_id,
-                observations:this.arrayOT,
-                fechas: fechasArr
-              }); */
           }
           console.log('datos:', {
             solicitante: this.datosOT.solicitante,
             ejecutor: this.datosOT.ejecutor,
-            ingreso: this.datosOT.ingreso,
-            sector_id: this.datosOT.sector_id,
-            line_id: this.datosOT.line_id,
-            machine_id: this.datosOT.machine_id,
+            ingreso: this.datosOT.ingreso.name,
+            sector_id: this.datosOT.sector.id,
+            line_id: this.datosOT.line.id,
+            machine: this.datosOT.machine.id,
             grupo: this.datosOT.grupo,
+            task:this.datosOT.task.id,
             status_id: this.datosOT.status_id,
             company_id: this.user.company_id,
             observations: this.arrayOT,
-            fechas: fechasArr,
+            fechas: fechasArr
           })
           await axios
             .post('ot',
               {
                 solicitante: this.datosOT.solicitante,
                 ejecutor: this.datosOT.ejecutor,
-                ingreso: this.datosOT.ingreso,
-                sector_id: this.datosOT.sector_id,
-                line_id: this.datosOT.line_id,
-                machine_id: this.datosOT.machine_id,
+                ingreso: this.datosOT.ingreso.name,
+                sector_id: this.datosOT.sector.id,
+                line_id: this.datosOT.line.id,
+                machine: this.datosOT.machine.id,
                 grupo: this.datosOT.grupo,
+                task:this.datosOT.task.id,
                 status_id: this.datosOT.status_id,
                 company_id: this.user.company_id,
                 observations: this.arrayOT,
-                fechas: fechasArr,
+                fechas: fechasArr
               },
               {
                 headers: { Authorization: `Bearer ${token}` },

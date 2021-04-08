@@ -10,7 +10,6 @@
             <th class="text-left">Real</th>
             <th class="text-left">Estado</th>
             <th class="text-left">Observaciones</th>
-            <th class="text-left">Imagenes</th>
             <th class="text-left">Opciones</th>
           </tr>
         </thead>
@@ -60,12 +59,12 @@
             <td data-label="Descripción" style="border: hidden">
               <v-textarea v-model="arrayOT[i].observations" dense outlined rows="1" hide-details class="my-2"/>
             </td>
-            <td data-label="Imagenes" style="border:hidden;">
-              <v-row>
-                <v-file-input accept="image/png, image/jpeg, image/bmp" style="min-width: 180px;"  :placeholder="files.length > 0 ? `${files.length} imagenes` : '0_imagenes'" prepend-icon prepend-inner-icon="mdi-camera" dense outlined hide-details v-model="arrayOT[i].img" multiple class="d-inline" ></v-file-input>
-                <carousel />                
-              </v-row>
-            </td>
+<!--             <td data-label="Imagenes" style="border:hidden;">
+              <span class="d-flex py-0 my-0 align-center">
+                <v-file-input accept="image/png, image/jpeg, image/bmp" :placeholder="files.length > 0 ? `${files.length} imagenes` : '0_imagenes'" prepend-icon prepend-inner-icon="mdi-camera" dense outlined hide-details v-model="arrayOT[i].img" multiple ></v-file-input>
+                <carousel :items="arrayOT[i].img" />        
+              </span>
+            </td> -->
             <td data-label="Eliminar" style="border: hidden">
               <v-btn x-small fab color="error" class="btn" dark @click="deleteRow(i)"><v-icon>delete</v-icon></v-btn>
             </td>
@@ -122,9 +121,9 @@
             <td data-label="Descripción">
               <v-textarea v-model="currentItem.observations" @keydown.enter="addRow" dense outlined rows="1" hide-details class="my-2" background-color="white"/>
             </td>
-            <td data-label="Imagenes">
+<!--             <td data-label="Imagenes">
               <observaciones-ot class="img" ref="obs"  @filesImg="files = $event" v-model="currentItem.img"/>
-            </td>
+            </td> -->
             <td data-label="Agregar">
               <v-btn ref="filaActual" x-small fab color="success" dark class="btn" @click="addRow"><v-icon>add</v-icon></v-btn>
             </td>
@@ -136,22 +135,15 @@
 </template>
 
 <script>
-import ObservacionesOt from './observacionesOt.vue'
 import axios from '@/plugins/axios';
 import Cookies from "js-cookie";
 import { mapMutations, mapState } from 'vuex'
-
-import carousel from "~/components/common/carousel.vue";
 export default {
    props: {
     arrayOT: {
       type: Array,
       require: true,
     },
-  },
-  components: {
-    ObservacionesOt,
-    carousel
   },
   data() {
     return {
@@ -162,31 +154,10 @@ export default {
         title: '',
         real: false,
         estado: '',
-        observations: '',
-        img: []
+        observations: ''
       },
       indice: 1,
-      files: [],
       search: '',
-      headers: [
-        { text: 'Item', value: 'itemTb', align: 'center', sortable: false },
-        { text: 'Sección', value: 'seccion', align: 'center', sortable: false },
-        { text: 'Título', value: 'titulo', align: 'center', sortable: false },
-        { text: 'Real', value: 'real', align: 'center', sortable: false },
-        { text: 'Estado', value: 'estado', align: 'center', sortable: false },
-        {
-          text: 'Observaciones',
-          value: 'observaciones',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: 'Imágenes',
-          value: 'imagenes',
-          align: 'center',
-          sortable: false,
-        },
-      ],
     }
   },
   computed:{
@@ -194,10 +165,6 @@ export default {
   methods: {
     addRow() {
       this.currentItem.updated = new Date(Date.now()).toISOString().slice(0,10);
-      /* this.currentItem.img = this.files; */ // Version que guarda el archivo completo
-      for (const item of this.files) {
-        this.currentItem.img.push(item.name);
-      }
       this.arrayOT.push(this.currentItem);
       this.currentItem = {
         updated:new Date().toISOString().substr(0, 10),
@@ -207,10 +174,8 @@ export default {
         real: false,
         estado: '',
         observations: '',
-        img: []
       }
-      this.files=[]
-      this.$refs.obs.clearFiles()
+      this.$emit('click');
       let options = { duration: 1000 };
     this.$vuetify.goTo(this.$refs.filaActual.$el, options);
     this.$refs.seccion.focus();
@@ -219,7 +184,6 @@ export default {
       this.arrayOT.splice(index, 1)
     }
   },
-  created() {},
 }
 </script>
 

@@ -4,12 +4,14 @@ import cookie from 'cookie';
 import axios from "../plugins/axios";
 
 export const state = () => ({
+  filesStore:[],
   auth: false,
   user:{
     username:'',
     company:'',
     company_id:"",
-    rol:null
+    rol:null,
+    company_type:null
   },
   infoModal:{
     dialog: false,
@@ -32,6 +34,7 @@ export const mutations = {
   },
   async SET_USER(state, payload){
     state.user = payload
+    state.user.company_type = 1;
   },
   async SET_AUTH_AUTOMATIC(state, res) {
     state.auth = true;

@@ -14,6 +14,7 @@
       </div>
     </v-dialog>
     <v-container>
+      {{arrayOT}}
       <v-row>
         <v-col cols="12">
           <v-card>
@@ -26,9 +27,9 @@
                       <v-row>
                         <v-col>
                           <v-card-title> Crear Nueva O.T </v-card-title>
-                          <v-card-subtitle>
+<!--                           <v-card-subtitle>
                             OT_CO_AU_LKRT-01_ME_OT-01115145
-                          </v-card-subtitle>
+                          </v-card-subtitle> -->
                         </v-col>
                       </v-row>
                     </v-container>
@@ -38,7 +39,10 @@
                   <v-col class="px-0">
                     <v-autocomplete
                       v-model="datosOT.status_id"
-                      :items="items"
+                      :items="itemStatus"
+                      item-text="type"
+                      item-value="type"
+                      return-object
                       label="Estatus"
                       outlined
                       dense
@@ -50,8 +54,11 @@
                   </v-col>
                   <v-col class="px-0">
                     <v-autocomplete
-                      v-model="datosOT.linea_id"
-                      :items="items"
+                      v-model="datosOT.line_id"
+                      :items="[{'id':1,'name':'linea nueva sysa'},{'id':2,'name':'linea de pruebas'}]"
+                      item-text="name"
+                      item-value="name"
+                      return-object
                       label="Linea"
                       outlined
                       dense
@@ -99,7 +106,10 @@
                 <v-col cols="12" md="6">
                   <v-autocomplete
                     v-model="datosOT.machine_id"
-                    :items="items"
+                    :items="itemMachine"
+                    item-text="name"
+                    item-value="name"
+                    return-object
                     label="Máquina"
                     outlined
                     dense
@@ -110,8 +120,11 @@
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-autocomplete
-                    v-model="datosOT.serie"
-                    :items="items"
+                    v-model="datosOT.sector_id"
+                    :items="[{'id':1,'name':'Taller Sysa'},{'id':2,'name':'Sector de pruebas'}]"
+                    item-text="name"
+                    item-value="name"
+                    return-object
                     label="Sector"
                     outlined
                     dense
@@ -156,8 +169,11 @@
 
                 <v-col cols="12" md="6">
                   <v-autocomplete
-                    v-model="datosOT.tarea"
-                    :items="['M.M.', 'M.E.']"
+                    v-model="datosOT.task_id"
+                    :items="itemTasks"
+                    item-text="type_task"
+                    item-value="type_task"
+                    return-object
                     label="Tarea"
                     outlined
                     dense
@@ -170,7 +186,10 @@
                 <v-col cols="12" md="6">
                   <v-autocomplete
                     v-model="datosOT.ingreso"
-                    :items="['Modo 1', 'Modo 2']"
+                    :items="[{'id':1,'name':'Modo 1'},{'id':2,'name':'Modo 2'}]"
+                    item-text="name"
+                    item-value="name"
+                    return-object
                     label="Modo Ingreso"
                     outlined
                     dense
@@ -253,11 +272,20 @@
       </v-row>
 
       <v-row>
-        <v-col>
-          <data-table-ot :arrayOT="arrayOT" />
+        <v-col cols="12">
+          <data-table-ot @click="$refs.obs.clearFiles()" :arrayOT="arrayOT" />
         </v-col>
+
+        <v-col cols="12" align-self="center">
+          <v-card width="100%" class="d-flex pa-2" color="#808080">
+            <observaciones-ot class="img" ref="obs"  @filesImg="imgArr = $event" v-model="imgArr"/>
+            <carousel :items="imgArr"/>
+          </v-card>
+        </v-col>
+
       </v-row>
-      <v-card>
+      
+      <v-card >
         <v-spacer></v-spacer>
         <v-card-actions class="d-flex justify-end">
           <v-btn @click="guardarOT" color="success">Guardar O.T</v-btn>
@@ -277,12 +305,13 @@ import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import moment from 'moment'
 
-import InfoModal from '~/components/common/infoModal.vue'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
-import ObservacionesOt from '~/components/common/observacionesOt.vue'
-import DataTableOt from '~/components/common/dataTableOT'
-import DataTableOT from '~/components/common/dataTableOT.vue'
-import BtnPDF from '~/components/common/btnPDF'
+import InfoModal from '~/components/common/infoModal.vue';
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
+import ObservacionesOt from '~/components/common/observacionesOt.vue';
+import Carousel from "~/components/common/carousel.vue";
+import DataTableOt from '~/components/common/dataTableOT';
+import DataTableOT from '~/components/common/dataTableOT.vue';
+import BtnPDF from '~/components/common/btnPDF';
 
 export default {
   layout: 'layoutitem',
@@ -292,9 +321,14 @@ export default {
     DataTableOT,
     BtnPDF,
     InfoModal,
+    Carousel
   },
   data(vm) {
     return {
+      imgArr:[],
+      itemTasks:[],
+      itemStatus:[],
+      itemMachine:[],
       arrayOT: [],
       overlay: false,
       disable: true,
@@ -320,6 +354,7 @@ export default {
         line_id: 1,
         machine_id: 1,
         grupo: 'pruebaOT',
+        task_id:null,
         status_id: 1,
         company_id: null,
         observations: [],
@@ -342,7 +377,10 @@ export default {
   },
   mounted() {
     this.showBar = false
-    console.log(this.user.company_id)
+    console.log(this.user.company_id);
+    this.getTasks();
+    this.getStatus();
+    this.getMachines();
   },
   methods: {
     ...mapMutations(['toggleInfoModal', 'ocultarInfoModal', 'cargarOTS']),
@@ -410,60 +448,49 @@ export default {
     async guardarOT() {
       try {
         if(this.$refs.form.validate()){
-          this.overlay = true;
-          let token = Cookies.get('company_id')
-          this.datosOT.company_id = this.user.company_id
+          //this.overlay = true;
+          let token = Cookies.get('token');
+          this.datosOT.company_id = this.user.company_id;
           this.datosOT.observations.push(...this.arrayOT) //Este Array se llena desde el componente DataTableOT
-          let fechasArr = []
+          let fechasArr = [];
           for (const item of this.frecuencia) {
             fechasArr.push({ fecha: item })
-            this.datosOT.id = `OT_0${this.ots.length + 1}_ME_AR-${moment(
-              this.datosOT.f_solicitud
-            )}`
-            /*             this.cargarOTS({
-                solicitante: this.datosOT.solicitante,
-                ejecutor: this.datosOT.ejecutor,
-                ingreso: this.datosOT.ingreso,
-                sector_id: this.datosOT.sector_id,
-                line_id: this.datosOT.line_id,
-                machine_id: this.datosOT.machine_id,
-                grupo: this.datosOT.grupo,
-                status_id: this.datosOT.status_id,
-                company_id: this.user.company_id,
-                observations:this.arrayOT,
-                fechas: fechasArr
-              }); */
           }
-          console.log('datos:', {
-            solicitante: this.datosOT.solicitante,
-            ejecutor: this.datosOT.ejecutor,
-            ingreso: this.datosOT.ingreso,
-            sector_id: this.datosOT.sector_id,
-            line_id: this.datosOT.line_id,
-            machine_id: this.datosOT.machine_id,
-            grupo: this.datosOT.grupo,
-            status_id: this.datosOT.status_id,
-            company_id: this.user.company_id,
-            observations: this.arrayOT,
-            fechas: fechasArr,
-          })
+
+          let formData = new FormData();
+              formData.append(`solicitante`,this.datosOT.solicitante);
+              formData.append(`ejecutor`,this.datosOT.ejecutor);
+              formData.append(`ingreso`,this.datosOT.ingreso.name);
+              formData.append(`sector_id`,this.datosOT.sector_id.id);
+              formData.append('line_id',this.datosOT.line_id.id);
+              formData.append('machine_id',this.datosOT.machine_id.id);
+              formData.append(`grupo`,this.datosOT.grupo);
+              formData.append(`type_task_id`,this.datosOT.task_id.id);
+              formData.append(`status_id`,this.datosOT.status_id.id);
+              formData.append(`company_id`,this.user.company_id);
+
+              this.arrayOT.forEach((item,i)=>{
+                formData.append(`observation[${i}].sections`, item.sections);
+                formData.append(`observation[${i}].title`, item.title);
+                formData.append(`observation[${i}].real`, item.real);
+                formData.append(`observation[${i}].estado`, item.estado);
+                formData.append(`observation[${i}].observations`, item.observations);
+              })
+              this.imgArr.forEach((item,i)=>{ 
+                formData.append(`img[${i}]`,item);                 
+              })
+              fechasArr.forEach((item,i)=>{ 
+                formData.append(`fechas[${i}]`,JSON.stringify(item));                 
+              })
+              console.log('data:',formData);
+
           await axios
-            .post('ot',
+            .post('ot',formData,
               {
-                solicitante: this.datosOT.solicitante,
-                ejecutor: this.datosOT.ejecutor,
-                ingreso: this.datosOT.ingreso,
-                sector_id: this.datosOT.sector_id,
-                line_id: this.datosOT.line_id,
-                machine_id: this.datosOT.machine_id,
-                grupo: this.datosOT.grupo,
-                status_id: this.datosOT.status_id,
-                company_id: this.user.company_id,
-                observations: this.arrayOT,
-                fechas: fechasArr,
-              },
-              {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { 
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type':'multipart/form-data'
+                },
               }
             )
             .then(() => {
@@ -477,7 +504,7 @@ export default {
             })
         }
       } catch (error) {
-        this.overlay = true;
+        this.overlay = false;
         console.log('Error POST guardarOT', error)
         this.toggleInfoModal({
           dialog: true,
@@ -486,6 +513,39 @@ export default {
           alertType: 'error',
         })
       }
+    },
+    async getTasks(){
+      let token = Cookies.get('token');
+      await axios.get('task',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res)=>{
+        console.log('tasks:', res.data.data);
+        this.itemTasks = res.data.data;
+      });     
+    },
+    async getStatus(){
+      let token = Cookies.get('token');
+      await axios.get('OTstatus',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res)=>{
+        console.log('status:', res.data.data);
+        this.itemStatus = res.data.data;
+      });     
+    },
+    async getMachines(){
+      let token = Cookies.get('token');
+      await axios.get('machine',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res)=>{
+        console.log('machine:', res.data.data);
+        this.itemMachine = res.data.data;
+      });     
     },
     formatDate(date) {
       if (!date) return null

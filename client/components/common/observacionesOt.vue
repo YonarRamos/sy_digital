@@ -7,12 +7,13 @@
       readonly
       hide-details
       outlined
+      color="#808080"
       background-color="white"
       dense
+      full-width
       :placeholder="files.length > 0 ? `${files.length} imagenes` : 'Importar imagenes'"
       style="cursor:pointer"
     />
-
     <v-dialog v-model="dialog" width="500px">
         <v-card class="pt-2">
           <v-card class="pa-2 mx-2" color="grey lighten-3">
@@ -58,8 +59,9 @@
                 height="100"
                 width="100"
                 @click="toggle"
+                disabled
               >
-                <v-img height="100" :src="n.path"></v-img>
+                <v-img height="100" :src="n.path" re></v-img>
               </v-card>
             </v-slide-item>
           </v-slide-group>
@@ -89,7 +91,6 @@ export default {
   },
   methods: {
       onAddFiles(files) {
-        console.log('It works')
         this.previews = []
         files.forEach((file, index) => {
           const reader = new FileReader()
@@ -107,8 +108,8 @@ export default {
         })
       },
       clearFiles(){
-        this.files=[]
-        this.dialog=false
+        this.files=[];
+        this.dialog=false;
       },
       enviarDatos(){
       this.dialog = false
@@ -127,5 +128,8 @@ export default {
 }
 input:hover{
   cursor: pointer;
+}
+div{
+  width: 100%;
 }
 </style>

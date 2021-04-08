@@ -91,22 +91,50 @@ class OTController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, response, auth }) {
+   async store({ request, response, auth }) {
     try {
       let { solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, type_task_id, company_id, observation , fechas} = request.all();
+      
+      fechas.forEach((item, i)=>{
+        fechas[i] = JSON.parse(item);
+      });
+
+      let img = request.file('img');
+      console.log('img:', img._files);
+
+      observation.img = [...img._files];  
+
+     let data = {
+        solicitante,
+        ejecutor, 
+        ingreso,
+        sector_id,
+        line_id,
+        machine_id,
+        grupo,
+        status_id,
+        type_task_id,
+        company_id,
+        observation,
+        fechas
+      }
+      console.log('data:', data);
+      
+      return;
      //console.log( solicitante, ejecutor, ingreso, sector_id, line_id, machine_id, grupo, status_id, type_task_id, company_id, observation , fechas)
      //console.log(observation)
      //var observationJSON = JSON.parse(observation);
-      observation.forEach(element => {
+/*       observation.forEach(element => {
         console.log(element)
        element.img = request.file('img', {
           types: ['image' , 'png', 'jpeg'],
           size: '4mb'
         })
         console.log(element.img)
-      });
-      
-      return observation
+      }); */
+    //   console.log('obs:', observation);
+    //   console.log('fechas', fechas);
+    //   return observation
      // var  observationJSON = JSON.parse(observation)
       const rules = {
         solicitante: 'required',
